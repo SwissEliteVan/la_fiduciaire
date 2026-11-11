@@ -1,0 +1,50 @@
+# La Fiduciaire — configuration Apache (Hostinger Business mutualisé)
+# Docroot = racine du projet : index.php sert de contrôleur frontal.
+
+Options -Indexes
+DirectoryIndex index.php
+
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+
+    # Fichiers et dossiers réellement présents servis directement.
+    RewriteCond %{REQUEST_FILENAME} -f [OR]
+    RewriteCond %{REQUEST_FILENAME} -d
+    RewriteRule ^ - [L]
+
+    # Tout le reste passe par le contrôleur frontal.
+    RewriteRule ^ index.php [L]
+</IfModule>
+
+# Le code applicatif n'est jamais servi.
+<IfModule mod_authz_core.c>
+    <FilesMatch "\.(php)$">
+        Require all granted
+    </FilesMatch>
+</IfModule>
+RedirectMatch 404 ^/app/
+RedirectMatch 404 ^/database/
+RedirectMatch 404 ^/projet/
+RedirectMatch 404 ^/instructions/
+RedirectMatch 404 ^/\.git
+
+# Cache des médias et actifs.
+<IfModule mod_expires.c>
+    ExpiresActive On
+    ExpiresByType video/webm "access plus 7 days"
+    ExpiresByType video/mp4 "access plus 7 days"
+    ExpiresByType image/jpeg "access plus 30 days"
+    ExpiresByType text/css "access plus 7 days"
+    ExpiresByType application/javascript "access plus 7 days"
+</IfModule>
+
+<IfModule mod_headers.c>
+    Header set X-Content-Type-Options "nosniff"
+    Header set Referrer-Policy "strict-origin-when-cross-origin"
+</IfModule>
+
+# Types MIME explicites pour les médias hero.
+<IfModule mod_mime.c>
+    AddType video/webm .webm
+    AddType video/mp4 .mp4
+</IfModule>

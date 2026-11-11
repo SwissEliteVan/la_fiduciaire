@@ -1,0 +1,305 @@
+{
+  "version": 1,
+  "fichiers": [
+    {
+      "id": "00",
+      "fichier": "00_SYSTEME_AGENT.md",
+      "titre": "Cadre commun",
+      "groupe": "Fondations",
+      "portee": "all",
+      "conseil": "Toujours ajouté automatiquement ; ne jamais le recopier séparément.",
+      "macro": false,
+      "sensible": false
+    },
+    {
+      "id": "01",
+      "fichier": "01_CADRAGE_STACK.md",
+      "titre": "Auditer le dossier et proposer une stack",
+      "groupe": "Démarrage",
+      "portee": "all",
+      "conseil": "Première étape recommandée pour tout nouveau projet ou projet existant.",
+      "macro": false,
+      "sensible": false
+    },
+    {
+      "id": "02",
+      "fichier": "02_DIRECTION_ARTISTIQUE.md",
+      "titre": "Direction artistique",
+      "groupe": "Conception",
+      "portee": "web",
+      "conseil": "Seulement si interface ou refonte visuelle pertinente.",
+      "macro": false,
+      "sensible": false
+    },
+    {
+      "id": "03",
+      "fichier": "03_PLAN_SITE_ARCHITECTURE.md",
+      "titre": "Pages et architecture",
+      "groupe": "Conception",
+      "portee": "web",
+      "conseil": "Après un cadrage et une décision de stack.",
+      "macro": false,
+      "sensible": false
+    },
+    {
+      "id": "04",
+      "fichier": "04_IMPLEMENTATION_BASE.md",
+      "titre": "Implémentation contrôlée",
+      "groupe": "Construction",
+      "portee": "all",
+      "conseil": "Après choix explicite de la tâche et de la stack.",
+      "macro": false,
+      "sensible": false
+    },
+    {
+      "id": "05",
+      "fichier": "05_WHATSAPP_TELEPHONE.md",
+      "titre": "WhatsApp et téléphone",
+      "groupe": "Modules commerciaux",
+      "portee": "commercial",
+      "conseil": "Si ces canaux sont décidés et coordonnées vérifiées.",
+      "macro": false,
+      "sensible": false
+    },
+    {
+      "id": "06",
+      "fichier": "06_CHAT_IA.md",
+      "titre": "Chat IA sécurisé",
+      "groupe": "Modules commerciaux",
+      "portee": "commercial",
+      "conseil": "Après approbation du fournisseur, des coûts et des données transmises.",
+      "macro": false,
+      "sensible": true
+    },
+    {
+      "id": "07",
+      "fichier": "07_FUNNEL_CONVERSION.md",
+      "titre": "Tunnel de conversion",
+      "groupe": "Modules commerciaux",
+      "portee": "commercial",
+      "conseil": "Si le projet vise des conversions commerciales.",
+      "macro": false,
+      "sensible": false
+    },
+    {
+      "id": "08",
+      "fichier": "08_POPUP_COMMERCIAL.md",
+      "titre": "Pop-up commercial",
+      "groupe": "Modules commerciaux",
+      "portee": "commercial",
+      "conseil": "Facultatif, si objectif commercial justifié.",
+      "macro": false,
+      "sensible": false
+    },
+    {
+      "id": "09",
+      "fichier": "09_BLOG_CMS.md",
+      "titre": "Blog et CMS",
+      "groupe": "Modules commerciaux",
+      "portee": "web",
+      "conseil": "Si le projet nécessite de publier du contenu.",
+      "macro": false,
+      "sensible": false
+    },
+    {
+      "id": "10",
+      "fichier": "10_COOKIES_CONSENTEMENT.md",
+      "titre": "Cookies et consentement",
+      "groupe": "Conformité web",
+      "portee": "web",
+      "conseil": "Si traceurs ou cookies nécessitent un consentement.",
+      "macro": false,
+      "sensible": false
+    },
+    {
+      "id": "11",
+      "fichier": "11_MEDIA_OPTIMISATION.md",
+      "titre": "Optimisation médias",
+      "groupe": "Conception",
+      "portee": "web",
+      "conseil": "Si images, vidéos ou polices sont utilisées.",
+      "macro": false,
+      "sensible": false
+    },
+    {
+      "id": "12",
+      "fichier": "12_ANIMATION_MOTION.md",
+      "titre": "Animations et mouvement",
+      "groupe": "Conception",
+      "portee": "web",
+      "conseil": "Si le produit contient des animations.",
+      "macro": false,
+      "sensible": false
+    },
+    {
+      "id": "13",
+      "fichier": "13_SEO_TECHNIQUE.md",
+      "titre": "SEO technique",
+      "groupe": "Conformité web",
+      "portee": "web",
+      "conseil": "Pour pages publiques indexables.",
+      "macro": false,
+      "sensible": false
+    },
+    {
+      "id": "14",
+      "fichier": "14_SECURITE_SITE.md",
+      "titre": "Sécurité",
+      "groupe": "Qualité",
+      "portee": "all",
+      "conseil": "Audit proportionné à la stack et aux risques.",
+      "macro": false,
+      "sensible": false
+    },
+    {
+      "id": "15",
+      "fichier": "15_PERFORMANCE_CWV.md",
+      "titre": "Performance et Core Web Vitals",
+      "groupe": "Conformité web",
+      "portee": "web",
+      "conseil": "Pour un site ou une application web.",
+      "macro": false,
+      "sensible": false
+    },
+    {
+      "id": "16",
+      "fichier": "16_ACCESSIBILITE_AA.md",
+      "titre": "Accessibilité WCAG",
+      "groupe": "Conformité web",
+      "portee": "web",
+      "conseil": "Pour toute interface web.",
+      "macro": false,
+      "sensible": false
+    },
+    {
+      "id": "17",
+      "fichier": "17_ANALYTICS_CONSENTI.md",
+      "titre": "Analytics consentis",
+      "groupe": "Modules commerciaux",
+      "portee": "commercial",
+      "conseil": "Si mesure des parcours prévue et autorisée.",
+      "macro": false,
+      "sensible": false
+    },
+    {
+      "id": "18",
+      "fichier": "18_AUDIT_GLOBAL.md",
+      "titre": "Audit global",
+      "groupe": "Qualité",
+      "portee": "all",
+      "conseil": "Avant livraison, scope adapté au type de produit.",
+      "macro": false,
+      "sensible": false
+    },
+    {
+      "id": "19",
+      "fichier": "19_CORRECTION_CONTROLEE.md",
+      "titre": "Corrections ciblées",
+      "groupe": "Qualité",
+      "portee": "all",
+      "conseil": "Après défaut prouvé ; sans refonte générale.",
+      "macro": false,
+      "sensible": false
+    },
+    {
+      "id": "20",
+      "fichier": "20_REPRISE_CONTEXTE.md",
+      "titre": "Reprendre le contexte",
+      "groupe": "Démarrage",
+      "portee": "all",
+      "conseil": "Pour un projet existant ou une reprise de session.",
+      "macro": false,
+      "sensible": false
+    },
+    {
+      "id": "21",
+      "fichier": "21_GESTION_ETAT.md",
+      "titre": "États et sessions",
+      "groupe": "Construction",
+      "portee": "all",
+      "conseil": "Si données, formulaires ou sessions sont concernés.",
+      "macro": false,
+      "sensible": false
+    },
+    {
+      "id": "22",
+      "fichier": "22_DEPLOIEMENT_PRODUCTION.md",
+      "titre": "Déploiement contrôlé",
+      "groupe": "Livraison",
+      "portee": "web",
+      "conseil": "Uniquement après validation et autorisation explicite.",
+      "macro": false,
+      "sensible": true
+    },
+    {
+      "id": "23",
+      "fichier": "23_TESTS_E2E.md",
+      "titre": "Tests de bout en bout",
+      "groupe": "Qualité",
+      "portee": "web",
+      "conseil": "Pour parcours utilisateurs vérifiables.",
+      "macro": false,
+      "sensible": false
+    },
+    {
+      "id": "24",
+      "fichier": "24_CONTENU_COMMERCIAL.md",
+      "titre": "Contenus commerciaux",
+      "groupe": "Modules commerciaux",
+      "portee": "commercial",
+      "conseil": "Après vérification des offres et mentions.",
+      "macro": false,
+      "sensible": false
+    },
+    {
+      "id": "25",
+      "fichier": "25_REFERENCES_ET_SKILLS.md",
+      "titre": "Documentation et outils",
+      "groupe": "Démarrage",
+      "portee": "all",
+      "conseil": "Pour résoudre une incertitude technique documentée.",
+      "macro": false,
+      "sensible": false
+    },
+    {
+      "id": "26",
+      "fichier": "26_MEGA_PROMPT_SITE_COMPLET.md",
+      "titre": "Site complet (macro-parcours)",
+      "groupe": "Livraison",
+      "portee": "commercial",
+      "conseil": "Mode guidé facultatif, ne pas lancer aveuglément en une seule session.",
+      "macro": true,
+      "sensible": true
+    },
+    {
+      "id": "27",
+      "fichier": "27_SITE_HTML_VANILLA.md",
+      "titre": "Site HTML vanilla",
+      "groupe": "Construction",
+      "portee": "web",
+      "conseil": "Seulement si HTML/CSS/JS a été choisi.",
+      "macro": false,
+      "sensible": false
+    },
+    {
+      "id": "28",
+      "fichier": "28_BACKEND_MINIMAL.md",
+      "titre": "Backend minimal",
+      "groupe": "Construction",
+      "portee": "web",
+      "conseil": "Si un serveur est réellement nécessaire.",
+      "macro": false,
+      "sensible": false
+    },
+    {
+      "id": "29",
+      "fichier": "29_AUDIT_MODULES_COMMERCIAUX.md",
+      "titre": "Audit des modules commerciaux",
+      "groupe": "Qualité",
+      "portee": "commercial",
+      "conseil": "Uniquement pour site commercial.",
+      "macro": false,
+      "sensible": false
+    }
+  ]
+}

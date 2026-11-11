@@ -1,0 +1,19 @@
+# Secrets et configuration locale : jamais versionnés.
+/app/config.local.php
+.env
+.env.*
+
+# Journaux et fichiers temporaires
+*.log
+/storage/*
+!/storage/.gitkeep
+
+# Système
+Thumbs.db
+.DS_Store
+desktop.ini
+
+# Outils locaux
+/vendor/
+/node_modules/
+.phpunit.result.cache
