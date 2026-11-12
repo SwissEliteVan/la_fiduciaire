@@ -26,6 +26,8 @@ RedirectMatch 404 ^/app/
 RedirectMatch 404 ^/database/
 RedirectMatch 404 ^/projet/
 RedirectMatch 404 ^/instructions/
+RedirectMatch 404 ^/tools/
+RedirectMatch 404 ^/storage/
 RedirectMatch 404 ^/\.git
 
 # Cache des médias et actifs.

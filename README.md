@@ -19,7 +19,10 @@ app/
   views/                  gabarit + pages
 assets/css/app.css        design system, responsive, prefers-reduced-motion
 assets/js/hero.js         pause/lecture du hero, respect du mouvement réduit
+assets/media-geres/       emplacement prévu pour les médias gérés (vide au départ)
 database/schema.sql       table `demandes_devis` (préparation TASK-006)
+tools/media-manager/      gestionnaire local de médias (outil, non publié)
+storage/                  JSON de gestion, imports temporaires, sauvegardes (ignoré par Git)
 hero-video.webm           source fournie par le propriétaire (ne pas modifier)
 hero-video.mp4            dérivé H.264 1080p/30, AAC 96k
 hero-video-poster.jpg     poster 1920×1080
@@ -35,6 +38,43 @@ php -S 127.0.0.1:8123 index.php
 ```
 
 `app/config.local.php` n'est jamais versionné (voir `.gitignore`).
+
+## Gestionnaire local de médias
+
+Outil local (PHP natif, aucune dépendance, aucun service externe) pour inventorier,
+classer et remplacer les médias du projet sans édition manuelle.
+
+```powershell
+powershell -ExecutionPolicy Bypass -File tools/media-manager/lancer.ps1
+```
+
+Équivalent manuel :
+
+```bash
+php -d upload_max_filesize=256M -d post_max_size=300M -S 127.0.0.1:8124 tools/media-manager/server.php
+```
+
+- Galerie : <http://127.0.0.1:8124/> (écoute locale uniquement).
+- Inventaire : images, vidéos, audio, SVG ; formats, dimensions, poids, empreintes,
+  doublons, variantes regroupées et usages fichier:ligne.
+- Décisions par média : CONSERVER, SUPPRIMER (candidat), REMPLACER (sélecteur de
+  fichiers local, comparaison avant/après), NON DÉCIDÉ.
+- JSON de gestion : `storage/media-manager/media-manager.json` ; imports temporaires
+  dans `storage/media-manager/imports/` ; sauvegardes, corbeille et rapports dans
+  `storage/media-manager/backups/` et `storage/media-manager/logs/`.
+- Aucune suppression avant validation explicite **et** saisie de `APPLIQUER`.
+  Les fichiers retirés sont déplacés en corbeille restaurable ; les NON DÉCIDÉS ne
+  sont jamais modifiés.
+- Contrat média vérifié avant application (AVIF/WebP/JPEG, largeurs, dimensions,
+  poster vidéo, attributs, budgets de poids). Les écarts bloquants exigent une
+  dérogation motivée, enregistrée dans le JSON.
+
+Vérifications en ligne de commande :
+
+```bash
+php tools/media-manager/tests/inventory-check.php
+php tools/media-manager/tests/contract-check.php
+```
 
 ## Base de données
 

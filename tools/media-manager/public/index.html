@@ -1,0 +1,152 @@
+<!doctype html>
+<html lang="fr">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Gestionnaire de médias — La Fiduciaire</title>
+    <meta name="robots" content="noindex, nofollow">
+    <link rel="stylesheet" href="/app.css">
+</head>
+<body>
+<a class="skip-link" href="#galerie">Aller à la galerie</a>
+
+<header class="entete">
+    <div class="entete__ligne">
+        <div class="entete__identite">
+            <span class="pastille" aria-hidden="true">M</span>
+            <div>
+                <h1>Gestionnaire de médias</h1>
+                <p class="entete__meta">
+                    <strong id="projet-nom">…</strong>
+                    <span aria-hidden="true">·</span>
+                    <span id="projet-pile">…</span>
+                </p>
+            </div>
+        </div>
+
+        <div class="entete__actions">
+            <button type="button" class="btn btn--discret" id="btn-scan" title="Relire les fichiers du projet">Actualiser</button>
+            <button type="button" class="btn btn--discret" id="btn-save">Enregistrer</button>
+            <label class="btn btn--discret" for="fichier-json">Importer JSON</label>
+            <input type="file" id="fichier-json" accept="application/json,.json" hidden>
+            <button type="button" class="btn btn--discret" id="btn-export">Exporter JSON</button>
+            <button type="button" class="btn btn--principal" id="btn-valider">Valider mes choix</button>
+            <button type="button" class="btn btn--danger" id="btn-appliquer" disabled title="Disponible après validation">Appliquer</button>
+        </div>
+    </div>
+
+    <div class="entete__ligne entete__ligne--bas">
+        <p class="stockage" id="stockage">Dossier de gestion : chargement…</p>
+        <p class="etat-session" id="etat-session" role="status" aria-live="polite">Chargement…</p>
+    </div>
+
+    <ul class="compteurs" aria-label="Compteurs de l’inventaire">
+        <li><span id="compteur-total">0</span> médias</li>
+        <li class="compteurs__statut compteurs__statut--utilise"><span id="compteur-utilise">0</span> utilisés</li>
+        <li class="compteurs__statut compteurs__statut--inutilise"><span id="compteur-inutilise">0</span> inutilisés</li>
+        <li class="compteurs__statut compteurs__statut--doublon"><span id="compteur-doublon">0</span> doublons</li>
+        <li class="compteurs__statut compteurs__statut--incertain"><span id="compteur-incertain">0</span> incertains</li>
+        <li class="compteurs__decision compteurs__decision--conserver"><span id="compteur-conserver">0</span> à conserver</li>
+        <li class="compteurs__decision compteurs__decision--supprimer"><span id="compteur-supprimer">0</span> à supprimer</li>
+        <li class="compteurs__decision compteurs__decision--remplacer"><span id="compteur-remplacer">0</span> à remplacer</li>
+        <li class="compteurs__decision compteurs__decision--nondecide"><span id="compteur-nondecides">0</span> non décidés</li>
+    </ul>
+</header>
+
+<section class="barre" aria-label="Filtres et actions de sélection">
+    <div class="barre__filtres">
+        <label class="champ champ--recherche">
+            <span class="visually-hidden">Rechercher un média</span>
+            <input type="search" id="recherche" placeholder="Rechercher (nom, chemin, usage)…" autocomplete="off">
+        </label>
+        <label class="champ">
+            <span>Statut</span>
+            <select id="filtre-statut">
+                <option value="">Tous</option>
+                <option value="UTILISÉ">Utilisés</option>
+                <option value="INUTILISÉ">Inutilisés</option>
+                <option value="DOUBLON">Doublons</option>
+                <option value="INCERTAIN">Incertains</option>
+            </select>
+        </label>
+        <label class="champ">
+            <span>Catégorie</span>
+            <select id="filtre-categorie"><option value="">Toutes</option></select>
+        </label>
+        <label class="champ">
+            <span>Décision</span>
+            <select id="filtre-decision">
+                <option value="">Toutes</option>
+                <option value="undecided">Non décidés</option>
+                <option value="keep">Conserver</option>
+                <option value="delete">Supprimer</option>
+                <option value="replace">Remplacer</option>
+            </select>
+        </label>
+    </div>
+
+    <div class="barre__selection">
+        <span class="selection-info" id="selection-info" role="status" aria-live="polite">Aucune sélection</span>
+        <button type="button" class="btn btn--mini" id="btn-tout-selectionner">Tout sélectionner</button>
+        <button type="button" class="btn btn--mini" id="btn-conserver-selection" disabled>Conserver</button>
+        <button type="button" class="btn btn--mini btn--danger-leger" id="btn-supprimer-selection" disabled>Supprimer</button>
+        <button type="button" class="btn btn--mini" id="btn-nondecide-selection" disabled>Non décidé</button>
+        <button type="button" class="btn btn--mini btn--discret" id="btn-reset">Réinitialiser</button>
+        <button type="button" class="btn btn--mini btn--discret" id="btn-annuler" disabled title="Annuler les derniers choix (session)">Annuler</button>
+    </div>
+</section>
+
+<main id="galerie" class="galerie" aria-live="polite">
+    <p class="vide" id="etat-vide">Chargement de l’inventaire…</p>
+    <div class="grille" id="grille" role="list"></div>
+</main>
+
+<footer class="pied">
+    <p>Aucune suppression sans validation explicite. Les fichiers retirés partent en corbeille dans <code>storage/media-manager/backups/</code>.</p>
+    <p>Contrat média vérifié avant application · preuves textuelles uniquement · aucune capture d’écran.</p>
+</footer>
+
+<dialog class="modale" id="modale-detail" aria-labelledby="titre-detail">
+    <div class="modale__entete">
+        <h2 id="titre-detail">Détail du média</h2>
+        <button type="button" class="btn-icone" data-fermer aria-label="Fermer">×</button>
+    </div>
+    <div class="modale__corps" id="detail-contenu"></div>
+</dialog>
+
+<dialog class="modale modale--large" id="modale-validation" aria-labelledby="titre-validation">
+    <div class="modale__entete">
+        <h2 id="titre-validation">Validation des choix</h2>
+        <button type="button" class="btn-icone" data-fermer aria-label="Fermer">×</button>
+    </div>
+    <div class="modale__corps" id="validation-contenu"></div>
+    <div class="modale__pied">
+        <p class="avertissement">La validation ne supprime rien. L’application exige la saisie explicite de <strong>APPLIQUER</strong>.</p>
+        <label class="champ champ--confirmation">
+            <span>Saisir APPLIQUER pour confirmer</span>
+            <input type="text" id="confirmation-apply" autocomplete="off" spellcheck="false" placeholder="APPLIQUER">
+        </label>
+        <div class="modale__boutons">
+            <button type="button" class="btn btn--discret" id="btn-fermer-validation">Revenir aux décisions</button>
+            <button type="button" class="btn btn--danger" id="btn-confirmer-apply" disabled>Appliquer les changements</button>
+        </div>
+    </div>
+</dialog>
+
+<dialog class="modale" id="modale-rapport" aria-labelledby="titre-rapport">
+    <div class="modale__entete">
+        <h2 id="titre-rapport">Rapport d’application</h2>
+        <button type="button" class="btn-icone" data-fermer aria-label="Fermer">×</button>
+    </div>
+    <div class="modale__corps" id="rapport-contenu"></div>
+    <div class="modale__pied">
+        <div class="modale__boutons" id="rapport-boutons"></div>
+    </div>
+</dialog>
+
+<div class="toasts" id="toasts" role="status" aria-live="polite"></div>
+
+<script src="/app.js" defer></script>
+</body>
+</html>
+
