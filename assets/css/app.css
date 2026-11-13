@@ -442,6 +442,51 @@ img, video { max-width: 100%; height: auto; }
 .form__row--check input { width: auto; margin-top: .35rem; }
 .form__row--check label { font-weight: 400; }
 
+.form__row input[aria-invalid="true"],
+.form__row select[aria-invalid="true"],
+.form__row textarea[aria-invalid="true"] {
+    border-color: #8c1e1e;
+}
+
+.form__error {
+    margin: 0;
+    font-size: .9rem;
+    color: #8c1e1e;
+}
+
+/* Champ piège à robots : hors écran, jamais focusable (tabindex=-1). */
+.hp {
+    position: absolute;
+    left: -9999px;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+}
+
+/* Messages de résultat du formulaire. */
+.alert {
+    max-width: 46rem;
+    margin: 1.2rem 0 0;
+    padding: .9rem 1.1rem;
+    border-left: 3px solid var(--line);
+    border-radius: 0 var(--radius) var(--radius) 0;
+    background: var(--paper-alt);
+}
+
+.alert h2 { font-size: 1.15rem; }
+.alert p:last-child,
+.alert h2:last-child { margin-bottom: 0; }
+
+.alert--error {
+    border-left-color: #8c1e1e;
+    background: rgba(140, 30, 30, .07);
+}
+
+.alert--success {
+    border-left-color: var(--accent);
+    background: rgba(15, 93, 85, .08);
+}
+
 /* Pied de page */
 .site-footer {
     border-top: 1px solid var(--line);

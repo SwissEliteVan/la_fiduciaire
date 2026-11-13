@@ -13,6 +13,9 @@ $pageDescription = content('pages.' . $view . '.description', content('site.desc
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title><?= e($pageTitle) ?></title>
     <meta name="description" content="<?= e($pageDescription) ?>">
+    <?php if ($view === 'devis'): ?>
+    <meta name="robots" content="noindex, nofollow">
+    <?php endif; ?>
     <link rel="canonical" href="<?= e(config('base_url', '') . request_path()) ?>">
     <link rel="stylesheet" href="<?= e(asset('assets/css/app.css')) ?>">
 </head>

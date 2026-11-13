@@ -25,4 +25,9 @@ return [
         'email'     => null,       // [À CONFIRMER]
         'telephone' => null,       // [À CONFIRMER]
     ],
+    // Empreinte d'IP facultative pour la colonne `ip_hash` du formulaire de devis.
+    // Laisser null : aucune adresse IP n'est conservée, même hachée.
+    'security' => [
+        'ip_salt' => null,         // secret aléatoire long, propre à l'environnement
+    ],
 ];

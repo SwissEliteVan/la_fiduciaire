@@ -17,6 +17,7 @@ if (PHP_SAPI === 'cli-server') {
 }
 
 require __DIR__ . '/app/bootstrap.php';
+require __DIR__ . '/app/devis.php';
 
 $routes = require __DIR__ . '/app/routes.php';
 $path = request_path();
@@ -29,10 +30,14 @@ if (!isset($routes[$path])) {
 $view = $routes[$path];
 $method = $_SERVER['REQUEST_METHOD'] ?? 'GET';
 
-// Le formulaire de devis est visible, mais son enregistrement MySQL relève de
-// TASK-006 : aucune donnée n'est acceptée ni stockée tant que ce n'est pas fait.
+if ($view === 'devis') {
+    // Données personnelles : aucune mise en cache intermédiaire, aucune indexation.
+    header('Cache-Control: no-store, max-age=0');
+    header('X-Robots-Tag: noindex, nofollow');
+}
+
 if ($view === 'devis' && $method === 'POST') {
-    render('devis-indisponible', [], 503);
+    devis_handle_post();
     exit;
 }
 

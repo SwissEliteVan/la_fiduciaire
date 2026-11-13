@@ -1,19 +1,20 @@
 # NOW — tâche active unique
 
 ```text
-ID : TASK-003
-Statut : TESTED
-Objectif utilisateur (1 phrase) : Obtenir un squelette PHP 8.3 natif + MySQL servable localement, avec l'accueil FR et son hero vidéo réel.
-Résultat observable et test d'acceptation : `php -S 127.0.0.1:8123` sert `/` en 200 ; le HTML contient `<video>` avec `hero-video.webm`, `hero-video.mp4`, poster local, bouton pause et respect de `prefers-reduced-motion` ; aucun secret réel dans les fichiers suivis.
-Pourquoi maintenant / priorité : ADR-001 tranché par le propriétaire (option A), TASK-002 terminée : le socle technique est la dépendance de toutes les tâches suivantes.
-Département et fichiers réservés : `index.php`, `.htaccess`, `app\**`, `assets\**`, `database\**`, `.gitignore`, `README.md`. Interdits d'écriture : `hero-video.webm`, `instructions\**`, `projet\**` (hors ce fichier).
-Agent auteur IA A/B : IA A (seule IA ; aucune relecture IA B inventée).
-GitHub issue CLAIM : aucune (dépôt Git non initialisé, ADR-003).
-HEAD/base SHA : aucun dépôt Git. Référence média : `hero-video.webm` = 3 149 260 octets, SHA-256 `9A90BDE6…741A627`.
-Dépendance/accord propriétaire : ADR-001 option A validée le 2026-11-10 ; vérification des capacités Hostinger reportée à la publication.
-Tests prévus / réellement exécutés : **exécutés le 2026-11-10** — `php -l` sur 14 fichiers PHP (0 erreur) ; `php -S 127.0.0.1:8125` : `/` 200 (6 116 o), `/prestations` 200, `/tarifs` 200, `/zones` 200, `/devis` 200, `/mentions-legales` 200, `/absent` **404**, CSS `text/css` (9 673 o), JS `application/javascript`, `hero-video.webm` `video/webm` (3 149 260 o), `hero-video.mp4` `video/mp4` (704 735 o), poster `image/jpeg` (48 511 o) ; `POST /devis` → **503** sans stockage ; HTML accueil : 1 balise `<video>`, poster, 2 sources (WebM + MP4), bouton pause, `lang="fr"`, aucune `Warning`/`Fatal` ; aucun `app/config.local.php`, aucun secret réel.
-Blocage P0 : aucun. MySQL absent localement : persistance du formulaire (TASK-006) non testable ici.
-Prochain petit pas unique : TASK-006 — implémenter le traitement POST `/devis` (validation serveur, CSRF, anti-spam natif, insertion MySQL préparée), test HTTP négatif possible sans base, insertion réelle à valider sur un MySQL de recette.
+ID : TASK-006
+Statut : TESTED (insertion MySQL NON EXÉCUTÉE localement)
+Objectif utilisateur (1 phrase) : Un prospect envoie une demande de devis valide ; elle est enregistrée en MySQL et une confirmation s'affiche, une saisie invalide produisant une erreur sans perte de données.
+Résultat observable et test d'acceptation : `GET /devis` 200 avec jeton CSRF et champ piège ; POST sans jeton 403 ; POST invalide 422 avec valeurs conservées et contenu échappé ; POST valide 503 si base absente (reprise sans fuite) et 303 + confirmation si base disponible ; 11e POST en 15 min 429 ; `PUT /devis` 405.
+Pourquoi maintenant / priorité : prochain pas unique documenté dans NOW ; aucune dépendance nouvelle, aucune migration de stack.
+Département et fichiers réservés : `index.php`, `app/bootstrap.php`, `app/devis.php` (nouveau), `app/views/devis.php`, `app/views/layout.php`, `app/content/fr.php`, `app/config.example.php`, `assets/css/app.css`, `tools/tests/**` (nouveau), `README.md`, `projet/NOW.md`, `projet/BACKLOG.md`.
+Agent auteur IA A/B : IA A (aucune relecture IA B réelle sollicitée dans cette session).
+GitHub issue CLAIM : aucune (pas d'issue de coordination).
+HEAD/base SHA : `6b4a51098e1f9bc6b4a547aaaed8fbc4d745e329` (main, arbre initialement propre).
+Dépendance/accord propriétaire : aucune dépense ; MySQL de recette et hébergement réel toujours non vérifiés (TASK-001 BLOCKED).
+Tests prévus / réellement exécutés : exécutés le 2026-11-13 — `php -l` sur 27 fichiers PHP : PASS, 0 erreur ; `php tools/tests/devis-check.php` : **25 PASS**, exit 0 ; `php tools/tests/devis-http.php http://127.0.0.1:8128` : **42 PASS**, exit 0 ; journaux du serveur : 0 warning PHP, 0 donnée personnelle.
+NON EXÉCUTÉ : insertion MySQL réelle et double envoi avec succès (`pdo_mysql` et MySQL absents localement) ; QA navigateur, mobile, clavier et captures (non autorisées).
+Blocage P0 : aucun blocage de code. Preuve d'insertion MySQL à faire sur un environnement disposant de `pdo_mysql`.
+Prochain petit pas unique : vérifier sur une base MySQL de recette l'insertion réelle, la confirmation 303 et l'absence de doublon au rejeu de l'ancien jeton ; puis passer TASK-006 à DONE.
 ```
 
 **TASK-002 — preuves réelles (2026-11-10) :**
