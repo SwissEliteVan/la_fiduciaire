@@ -1,27 +1,18 @@
 # NOW — tâche active unique
 
-```text
-ID : TASK-006
-Statut : TESTED (insertion MySQL NON EXÉCUTÉE localement)
-Objectif utilisateur (1 phrase) : Un prospect envoie une demande de devis valide ; elle est enregistrée en MySQL et une confirmation s'affiche, une saisie invalide produisant une erreur sans perte de données.
-Résultat observable et test d'acceptation : `GET /devis` 200 avec jeton CSRF et champ piège ; POST sans jeton 403 ; POST invalide 422 avec valeurs conservées et contenu échappé ; POST valide 503 si base absente (reprise sans fuite) et 303 + confirmation si base disponible ; 11e POST en 15 min 429 ; `PUT /devis` 405.
-Pourquoi maintenant / priorité : prochain pas unique documenté dans NOW ; aucune dépendance nouvelle, aucune migration de stack.
-Département et fichiers réservés : `index.php`, `app/bootstrap.php`, `app/devis.php` (nouveau), `app/views/devis.php`, `app/views/layout.php`, `app/content/fr.php`, `app/config.example.php`, `assets/css/app.css`, `tools/tests/**` (nouveau), `README.md`, `projet/NOW.md`, `projet/BACKLOG.md`.
-Agent auteur IA A/B : IA A (aucune relecture IA B réelle sollicitée dans cette session).
-GitHub issue CLAIM : aucune (pas d'issue de coordination).
-HEAD/base SHA : `6b4a51098e1f9bc6b4a547aaaed8fbc4d745e329` (main, arbre initialement propre).
-Dépendance/accord propriétaire : aucune dépense ; MySQL de recette et hébergement réel toujours non vérifiés (TASK-001 BLOCKED).
-Tests prévus / réellement exécutés : exécutés le 2026-11-13 — `php -l` sur 27 fichiers PHP : PASS, 0 erreur ; `php tools/tests/devis-check.php` : **25 PASS**, exit 0 ; `php tools/tests/devis-http.php http://127.0.0.1:8128` : **42 PASS**, exit 0 ; journaux du serveur : 0 warning PHP, 0 donnée personnelle.
-NON EXÉCUTÉ : insertion MySQL réelle et double envoi avec succès (`pdo_mysql` et MySQL absents localement) ; QA navigateur, mobile, clavier et captures (non autorisées).
-Blocage P0 : aucun blocage de code. Preuve d'insertion MySQL à faire sur un environnement disposant de `pdo_mysql`.
-Prochain petit pas unique : vérifier sur une base MySQL de recette l'insertion réelle, la confirmation 303 et l'absence de doublon au rejeu de l'ancien jeton ; puis passer TASK-006 à DONE.
-```
+**TASK-012 · Recette sur l’hébergement cible (en attente d’accès).** Tester d’abord un devis fictif sous HTTPS et sa lecture dans le dossier privé. Pour le portail, vérifier ensuite PHP 8.3/PDO MySQL, les limites de requête, les sessions, la CLI, le scanner et la sauvegarde/restauration. Confirmer les textes publics et la gestion des accès avant ouverture.
 
-**TASK-002 — preuves réelles (2026-11-10) :**
-- `ffprobe hero-video.webm` → `vp9 3840x2160 60/1` + `opus`, `matroska,webm`, 10,056 s, 3 149 260 octets.
-- MP4 produit → code 0, `h264 1920x1080 30/1` + `aac`, 10,048 s, **704 735 octets**.
-- Poster produit → code 0, `mjpeg 1920x1080`, **48 511 octets**.
-- Source **intacte** : 3 149 260 octets, 2026-09-13 14:27:43, SHA-256 `9A90BDE6…741A627` inchangé.
+## Passation de TASK-013
 
-**Règles :** fichier unique, pas de journal. Seul le détenteur du CLAIM édite ce fichier.
+- Demande du propriétaire : appliquer visiblement la charte et rendre le site utilisable sans SQL. Coordination [#2](https://github.com/SwissEliteVan/la_fiduciaire/issues/2).
+- Livré : accueil en deux panneaux, bleu LF et filets verticaux, logo agrandi, vidéo locale conservée, formulaire assorti. Le lien vers le portail reste masqué tant que celui-ci est désactivé.
+- Le devis est actif par défaut, stocké hors racine publique en JSON privé. Consultation par CLI ou gestionnaire de fichiers. Aucun e-mail automatique. Aucun accès public au dossier. Le mode MySQL est toujours disponible sur configuration explicite.
+- Recette HTTP/CLI avec PHP 8.3 sans PDO ni configuration locale, sur fichiers fictifs. Dépôt valide et unique, validation, CSRF, honeypot, taille, quota et défaut de stockage vérifiés. Hébergement réel, mobile visuel et clavier non vérifiés. Rien n’a été déployé.
 
+## Passation de TASK-011
+
+- Base de départ : `6b4a51098e1f9bc6b4a547aaaed8fbc4d745e329`, branche unique `main`, coordination [#1](https://github.com/SwissEliteVan/la_fiduciaire/issues/1).
+- Livré dans le dépôt : charte LF, prompt de finalisation, portail PHP/MySQL sur invitation avec deux rôles, dépôt et suivi, devis enregistré si activé.
+- Vérifié localement le 13 novembre 2026, PHP 8.3.36 et MariaDB 11.4.13 : lint PHP, recette HTTP avec deux dossiers clients et un compte cabinet, formats/quantité/taille, double de test du scanner (acceptation/refus/panne), contrôles d’accès, statuts, révocation, devis invalide/valide sans doublon. Les logos fournis sont inchangés et les paires de couleurs clés ont été mesurées.
+- Non vérifié : Hostinger/Apache réel, HTTPS et scanner réels, restauration sur l’hébergeur, recette visuelle et clavier. Le contrôle média signale encore les variantes du poster et le poids du WebM historique. Les PNG de marque sont conservés comme fournis, sans variantes photo. Aucune seconde IA de revue n’a été mandatée.
+- À ce jalon historique, les fonctionnalités étaient désactivées par défaut. Aucun déploiement, aucune donnée réelle. Le push n’autorise pas la mise en production.

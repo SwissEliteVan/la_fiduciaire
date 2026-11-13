@@ -1,0 +1,143 @@
+/* Signature LF : bleu franc, filets verticaux et composition éditoriale. */
+.site-header {
+    padding: 0;
+    background: var(--white);
+    border-bottom: 1px solid var(--line);
+}
+
+.site-header__inner {
+    width: min(100%, var(--wrap));
+    margin-inline: auto;
+    padding: .8rem clamp(1rem, 3vw, 2rem);
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: .55rem 1.35rem;
+}
+
+.brand__logo { width: clamp(8.25rem, 17vw, 11rem); }
+.site-nav { gap: .35rem 1.1rem; }
+.site-nav a { display: inline-flex; align-items: center; min-height: 44px; }
+.header-actions { gap: .45rem; }
+.btn--header { white-space: nowrap; }
+
+.site--vitrine .hero {
+    width: min(100%, 96rem);
+    margin-inline: auto;
+    padding: 0;
+    min-height: auto;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, .92fr);
+    align-items: stretch;
+    background: var(--brand);
+}
+
+.hero__content {
+    margin: 0;
+    padding: clamp(2.25rem, 6vw, 6rem) clamp(1.25rem, 5vw, 5.5rem);
+    position: relative;
+    z-index: 1;
+}
+
+.hero__eyebrow, .section-kicker {
+    display: flex;
+    align-items: center;
+    gap: .65rem;
+    margin: 0 0 .9rem;
+    font-weight: 720;
+    font-size: .78rem;
+    letter-spacing: .09em;
+    text-transform: uppercase;
+}
+
+.hero__eyebrow { color: var(--white); }
+.hero__eyebrow::before, .section-kicker span::before {
+    content: "";
+    display: inline-block;
+    width: .15rem;
+    height: 1.2em;
+    background: currentColor;
+}
+.section-kicker, .section__head .section-kicker { color: var(--brand); }
+.section-kicker span { display: inline-flex; align-items: center; gap: .65rem; }
+
+.hero__title {
+    max-width: 13ch;
+    font-size: clamp(2.55rem, 5.65vw, 6rem);
+    line-height: 1.01;
+    letter-spacing: -.055em;
+    text-wrap: balance;
+}
+
+.hero__subtitle { margin-top: 1.2rem; color: var(--white); max-width: 40ch; }
+.hero__media { position: relative; isolation: isolate; min-height: 15rem; background: var(--brand-deep) url('/hero-video-poster.jpg') center / cover no-repeat; }
+.hero__video { z-index: 0; }
+.hero__overlay { z-index: 1; pointer-events: none; background: linear-gradient(115deg, rgba(15, 61, 90, .34), rgba(11, 43, 64, .07) 60%, rgba(11, 43, 64, .37)); }
+.hero__toggle {
+    position: absolute;
+    z-index: 2;
+    bottom: 1rem;
+    right: 1rem;
+    min-height: 44px;
+    background: var(--brand-deep);
+    border-color: var(--white);
+}
+.hero__toggle:hover { background: var(--brand); }
+.btn--on-brand { color: var(--brand); background: var(--white); border-color: var(--white); }
+.hero .btn--on-brand:hover, .cta-band .btn--on-brand:hover { color: var(--brand-deep); background: var(--paper-alt); border-color: var(--paper-alt); }
+.hero .btn--ghost { border-color: var(--white); }
+
+.site--vitrine .cards { grid-template-columns: repeat(auto-fit, minmax(min(100%, 240px), 1fr)); }
+.card--service { border-top: 3px solid var(--brand); padding: 1.25rem 1.5rem 1.5rem; }
+.card__index {
+    display: inline-block;
+    margin-bottom: .85rem;
+    padding: .15rem .5rem;
+    background: var(--paper-alt);
+    color: var(--brand);
+    font-size: .84rem;
+    font-weight: 720;
+    font-variant-numeric: tabular-nums;
+    border-radius: .35rem;
+}
+
+.cta-band { background: var(--brand); }
+.cta-band .section-kicker, .quote-hero .section-kicker { color: var(--white); }
+.site-footer { background: var(--paper-alt); }
+
+.quote-hero { background: var(--brand); color: var(--white); }
+.quote-hero__inner {
+    width: min(100%, var(--wrap));
+    margin-inline: auto;
+    padding: clamp(2rem, 5vw, 4rem) clamp(1rem, 3vw, 2.5rem) clamp(3rem, 6vw, 5.5rem);
+}
+.quote-hero__inner > p:last-child { max-width: 60ch; margin-bottom: 0; }
+.quote-section { position: relative; padding-top: 0; margin-top: -1.5rem; }
+.quote-card {
+    max-width: 51rem;
+    padding: clamp(1rem, 4vw, 2rem);
+    background: var(--white);
+    border: 1px solid var(--line);
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+}
+.quote-card .form { max-width: none; }
+.quote-card [aria-invalid="true"] { border-color: var(--status-error); }
+.quote-card small[id^="erreur-"], .quote-card [role="alert"] { color: var(--status-error); }
+.quote-card [role="alert"] { background: var(--status-error-bg); border-color: var(--status-error); }
+.quote-card [role="status"] { color: var(--status-treated); background: var(--status-treated-bg); border-color: var(--status-treated); }
+
+@media (max-width: 720px) {
+    .site-header { position: static; }
+    .site-nav { order: 3; }
+    .site--vitrine .hero { grid-template-columns: 1fr; }
+    .hero__media { min-height: clamp(12rem, 56vw, 21rem); }
+}
+
+@media (max-width: 360px) {
+    .header-actions { margin-left: 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .hero__video, .hero__toggle { display: none; }
+}

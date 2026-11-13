@@ -17,6 +17,5 @@ declare(strict_types=1);
         <?php endforeach; ?>
     </ul>
 
-    <p class="notice"><?= e(content('prestations.note')) ?></p>
     <p class="section__link"><a class="btn btn--primary" href="/devis"><?= e(content('hero.cta')) ?></a></p>
 </section>

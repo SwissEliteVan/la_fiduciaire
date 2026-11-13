@@ -7,6 +7,10 @@ DirectoryIndex index.php
 <IfModule mod_rewrite.c>
     RewriteEngine On
 
+    # Refus avant le passage direct des fichiers existants.
+    RewriteRule ^(?:app|database|projet|instructions|tools|storage)(?:/|$) - [R=404,L,NC]
+    RewriteRule (^|/)\.(?!well-known(?:/|$)) - [R=404,L]
+
     # Fichiers et dossiers réellement présents servis directement.
     RewriteCond %{REQUEST_FILENAME} -f [OR]
     RewriteCond %{REQUEST_FILENAME} -d
@@ -16,19 +20,9 @@ DirectoryIndex index.php
     RewriteRule ^ index.php [L]
 </IfModule>
 
-# Le code applicatif n'est jamais servi.
-<IfModule mod_authz_core.c>
-    <FilesMatch "\.(php)$">
-        Require all granted
-    </FilesMatch>
-</IfModule>
-RedirectMatch 404 ^/app/
-RedirectMatch 404 ^/database/
-RedirectMatch 404 ^/projet/
-RedirectMatch 404 ^/instructions/
-RedirectMatch 404 ^/tools/
-RedirectMatch 404 ^/storage/
-RedirectMatch 404 ^/\.git
+# Protection supplémentaire si la réécriture n'est pas disponible.
+RedirectMatch 404 (?i)^/(app|database|projet|instructions|tools|storage)(/|$)
+RedirectMatch 404 (^|/)\.(?!well-known(?:/|$))
 
 # Cache des médias et actifs.
 <IfModule mod_expires.c>

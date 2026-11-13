@@ -1,4 +1,4 @@
-# Roadmap — La Fiduciaire (vitrine)
+# Roadmap — La Fiduciaire (vitrine et portail)
 
 **Statut :** rempli le 2026-11-10. Cette feuille **n'autorise aucun déploiement** ; la publication exige un accord distinct du propriétaire.
 
@@ -14,6 +14,8 @@
 | 7 — Qualité | a11y, SEO technique, Web Vitals, tests automatisés ciblés | budgets et vérifications consignés | phases 4 à 6 |
 | 8 — Préparation release | sauvegarde/rollback testables, journal de release | statut `PRÊT À PUBLIER` | phase 7 |
 | 9 — Publication | mise en production | accord explicite du propriétaire, fichier par fichier | phase 8 |
-| Hors phase | application de gestion Laravel | — | décision ultérieure du propriétaire |
+| 10 — Portail MVP | Charte LF, accès sur invitation, dépôt et traitement, prompt de finalisation | recette HTTP locale sur données fictives | réalisé sur le socle PHP natif |
+| 11 — Recette portail | Capacité réelle, restauration, recette ergonomique, scanner et textes validés | TASK-012 puis accord distinct d’ouverture | accès à l’hébergement de recette |
+| Hors phase | Application de gestion Laravel, OCR et intégrations | — | décision ultérieure du propriétaire |
 
 **Règles :** une seule tâche active dans `NOW.md` ; pas d'i18n EN/DE/IT avant que la vitrine FR soit stable ; aucun SaaS externe indispensable ; aucune capture QA sans autorisation.

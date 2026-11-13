@@ -55,6 +55,13 @@
         });
     }
 
-    pauseForReducedMotion();
+    if (reduce.matches) {
+        pauseForReducedMotion();
+    } else {
+        var autoplay = video.play();
+        if (autoplay && typeof autoplay.catch === 'function') {
+            autoplay.catch(sync);
+        }
+    }
     sync();
 }());

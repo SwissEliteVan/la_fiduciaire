@@ -1,21 +1,5 @@
 /* La Fiduciaire — feuille de style unique, sans dépendance externe. */
 
-:root {
-    --ink: #121c26;
-    --ink-soft: #3d4b57;
-    --paper: #faf8f4;
-    --paper-alt: #f1ece3;
-    --line: #dcd4c7;
-    --accent: #0f5d55;
-    --accent-dark: #0b443e;
-    --gold: #a9853f;
-    --white: #ffffff;
-    --radius: 14px;
-    --shadow: 0 18px 40px -28px rgba(18, 28, 38, .55);
-    --wrap: 1120px;
-    --font: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-}
-
 *,
 *::before,
 *::after {
@@ -55,7 +39,8 @@ a:hover { color: var(--accent); }
 img, video { max-width: 100%; height: auto; }
 
 :focus-visible {
-    outline: 3px solid var(--gold);
+    outline: 3px solid var(--focus);
+    box-shadow: 0 0 0 3px var(--white);
     outline-offset: 3px;
 }
 
@@ -93,7 +78,7 @@ img, video { max-width: 100%; height: auto; }
     gap: 1.5rem;
     flex-wrap: wrap;
     padding: .9rem clamp(1rem, 3vw, 2.5rem);
-    background: rgba(250, 248, 244, .94);
+    background: rgba(244, 247, 250, .98);
     backdrop-filter: blur(8px);
     border-bottom: 1px solid var(--line);
 }
@@ -108,18 +93,7 @@ img, video { max-width: 100%; height: auto; }
     letter-spacing: -.01em;
 }
 
-.brand__mark {
-    display: grid;
-    place-items: center;
-    width: 2.2rem;
-    height: 2.2rem;
-    border-radius: 8px;
-    background: var(--accent);
-    color: var(--white);
-    font-size: .85rem;
-    font-weight: 700;
-    letter-spacing: .04em;
-}
+.brand__logo { display: block; width: clamp(124px, 14vw, 166px); }
 
 .site-nav {
     display: flex;
@@ -144,13 +118,15 @@ img, video { max-width: 100%; height: auto; }
     align-items: center;
     justify-content: center;
     gap: .5rem;
-    padding: .85rem 1.5rem;
-    border-radius: 999px;
+    min-height: 44px;
+    padding: .7rem 1.25rem;
+    border-radius: var(--radius-control);
     border: 1px solid transparent;
     font-weight: 600;
     font-size: .98rem;
     text-decoration: none;
     cursor: pointer;
+    font-family: inherit;
     transition: background-color .18s ease, color .18s ease, border-color .18s ease;
 }
 
@@ -167,7 +143,10 @@ img, video { max-width: 100%; height: auto; }
 }
 .btn--ghost:hover { background: rgba(255, 255, 255, .14); color: var(--white); }
 
-.btn--header { margin-left: .5rem; padding: .6rem 1.1rem; font-size: .9rem; }
+.header-actions { display: flex; gap: .65rem; flex-wrap: wrap; }
+.btn--header { padding: .5rem .85rem; font-size: .9rem; }
+.btn--secondary { color: var(--brand); background: var(--white); border-color: var(--line-control); }
+.btn--secondary:hover { color: var(--brand-deep); background: var(--paper-alt); border-color: var(--brand); }
 
 /* Hero vidéo */
 .hero {
@@ -322,7 +301,7 @@ img, video { max-width: 100%; height: auto; }
     width: .55rem;
     height: .55rem;
     border-radius: 50%;
-    background: var(--gold);
+    background: var(--brand);
 }
 
 /* Témoignages clients */
@@ -404,8 +383,8 @@ img, video { max-width: 100%; height: auto; }
 .notice {
     max-width: 70ch;
     padding: 1rem 1.2rem;
-    border-left: 3px solid var(--gold);
-    background: rgba(169, 133, 63, .1);
+    border-left: 3px solid var(--brand);
+    background: var(--paper-alt);
     border-radius: 0 var(--radius) var(--radius) 0;
     color: var(--ink-soft);
 }
@@ -429,8 +408,9 @@ img, video { max-width: 100%; height: auto; }
     font: inherit;
     color: var(--ink);
     background: var(--white);
-    border: 1px solid var(--line);
-    border-radius: 10px;
+    border: 1px solid var(--line-control);
+    border-radius: var(--radius-control);
+    min-height: 44px;
 }
 
 .form__row--check {
@@ -439,53 +419,8 @@ img, video { max-width: 100%; height: auto; }
     gap: .7rem;
 }
 
-.form__row--check input { width: auto; margin-top: .35rem; }
+.form__row--check input { width: auto; min-height: 0; margin-top: .35rem; }
 .form__row--check label { font-weight: 400; }
-
-.form__row input[aria-invalid="true"],
-.form__row select[aria-invalid="true"],
-.form__row textarea[aria-invalid="true"] {
-    border-color: #8c1e1e;
-}
-
-.form__error {
-    margin: 0;
-    font-size: .9rem;
-    color: #8c1e1e;
-}
-
-/* Champ piège à robots : hors écran, jamais focusable (tabindex=-1). */
-.hp {
-    position: absolute;
-    left: -9999px;
-    width: 1px;
-    height: 1px;
-    overflow: hidden;
-}
-
-/* Messages de résultat du formulaire. */
-.alert {
-    max-width: 46rem;
-    margin: 1.2rem 0 0;
-    padding: .9rem 1.1rem;
-    border-left: 3px solid var(--line);
-    border-radius: 0 var(--radius) var(--radius) 0;
-    background: var(--paper-alt);
-}
-
-.alert h2 { font-size: 1.15rem; }
-.alert p:last-child,
-.alert h2:last-child { margin-bottom: 0; }
-
-.alert--error {
-    border-left-color: #8c1e1e;
-    background: rgba(140, 30, 30, .07);
-}
-
-.alert--success {
-    border-left-color: var(--accent);
-    background: rgba(15, 93, 85, .08);
-}
 
 /* Pied de page */
 .site-footer {
@@ -511,7 +446,7 @@ img, video { max-width: 100%; height: auto; }
 @media (max-width: 720px) {
     .site-header { gap: .8rem; }
     .site-nav { order: 3; width: 100%; margin-left: 0; gap: .9rem; }
-    .btn--header { margin-left: auto; }
+    .header-actions { margin-left: auto; }
     .hero { min-height: 74svh; }
 }
 
