@@ -1,6 +1,31 @@
 # NOW — tâche active unique
 
-**TASK-012 · Recette sur l’hébergement cible (en attente d’accès).** Tester d’abord un devis fictif sous HTTPS et sa lecture dans le dossier privé. Pour le portail, vérifier ensuite PHP 8.3/PDO MySQL, les limites de requête, les sessions, la CLI, le scanner et la sauvegarde/restauration. Confirmer les textes publics et la gestion des accès avant ouverture.
+**TASK-014 / TASK-015 · Portail sans SQL et consultation cabinet (livré, recette Windows).**
+
+- Date : 2026-11-13. Branche unique `main`. Livraison fonctionnelle : `74b045f22026a0fbd138a70bde3df211ddabd267`. Fusion de `origin/main` (`f4c1b08`) : `ece9510`. Aucun déploiement.
+- Objectif : rendre les trois parcours utilisables sans MySQL ni SQLite, avec la charte LF, et prouver l’enregistrement unique du devis, le dépôt/téléchargement client, le cloisonnement entre clients et le statut cabinet visible par le bon client.
+- Livré :
+  - stockage privé JSON verrouillé + pièces hors racine web (`app/portal/store.php`, `store-files.php`, `store-mysql.php`, `paths.php`) ; `portal.backend = files` pour la recette, MySQL conservé en option ;
+  - devis sans SQL réparé sous Windows (chemins, permissions POSIX conservées sur Unix, écritures atomiques) ;
+  - espace cabinet : liste des demandes de devis, invitation avec code affiché une seule fois, dossiers, téléchargement, statuts « Traité » / « À remplacer » ;
+  - espace client : activation 24 h, dépôt PDF/JPG/PNG réel, historique, téléchargement contrôlé ;
+  - vues `portal-invite.php`, `portal-quotes.php` et composants de charte (panneaux, barre d’actions, états, code, messages) ; logos officiels et vidéo hero conservés avec poster et bouton pause.
+- Preuves exécutées le 2026-11-13 (Windows, PHP 8.5.5, sans `pdo_mysql` ni `pdo_sqlite`) :
+  - `php -l` sur 43 fichiers PHP : 0 erreur ;
+  - `python tools/tests/devis-sans-sql.py` : PASS (devis unique, confirmation après écriture réelle, CSRF, validation, taille, honeypot, quota, CLI privée) ;
+  - `python tools/tests/portail-sans-sql.py` : PASS (invitation + code unique, activation, devis unique et consultation cabinet, refus client, dépôt réel de 2 pièces, téléchargement à l’identique, second client sans vue et 404, statut cabinet visible côté client, reset/révocation, JSON cohérent, aucun warning ni donnée personnelle dans les journaux) ;
+  - vérification statique charte/mobile : logos LF, `brand.css`, `vitrine.css`, `portal.css`, `@media (max-width: 720px)`, `@media (max-width: 640px)`, contrôles de 44 px ; aucune capture (AGENTS.md §14).
+- NON EXÉCUTÉ : recette MySQL (`portail-http.py`, `pdo_mysql` absent), scanner antivirus réel (double de test local uniquement), permissions POSIX et ACL Linux réelles, Hostinger/Apache/TLS, sauvegarde/restauration, recette navigateur mobile/clavier, déploiement.
+- Limites : sous Windows, PHP ne restitue pas les ACL NTFS ; les contrôles 0700/0600 restent obligatoires sur Linux. La limite PHP locale `upload_max_filesize` (2 Mo par défaut) s’applique ; la recette lance le serveur avec 10 Mo. Le JSON convient au MVP, pas à plusieurs instances PHP.
+- Recette locale sans SQL :
+  ```powershell
+  Copy-Item app/config.recette.php app/config.local.php
+  php tools/portal/comptes.php cabinet cabinet@example.invalid
+  php -S 127.0.0.1:8123 index.php
+  ```
+  puis `http://127.0.0.1:8123/espace-client/activation` avec le code affiché par la commande. Tests : `python tools/tests/devis-sans-sql.py` et `python tools/tests/portail-sans-sql.py`.
+- README local non commité conservé à l’identique et inclus dans la livraison : SHA-256 `11807EAE89B456E003E2A7A3D7D623813D3A4C0FD7A320ADCF380FFCFD634A02`. Aucune modification de son contenu.
+- Aucune seconde IA de revue mandatée.
 
 ## Passation de TASK-013
 
