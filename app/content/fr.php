@@ -37,28 +37,33 @@ return [
         'title'       => 'Votre comptabilité, en clair.',
         'subtitle'    => 'Comptabilité, TVA, salaires, pilotage, création d’entreprise et bouclement : un interlocuteur unique pour indépendants, TPE et PME.',
         'cta'         => 'Demander un devis',
-        'cta_alt'     => 'Voir les prestations',
+        'cta_alt'     => 'Voir les 6 prestations',
         'video_pause' => 'Mettre la vidéo en pause',
         'video_play'  => 'Relancer la vidéo',
         'video_label' => 'Vidéo d’illustration en arrière-plan',
     ],
 
     'home' => [
+        'proof_items'          => ['Indépendants, TPE et PME', 'Suisse romande', 'Un interlocuteur unique'],
         'prestations_title'    => 'Ce que nous prenons en charge',
+        'prestations_answer'   => 'La Fiduciaire prend en charge six domaines : comptabilité, TVA, salaires, pilotage, création d’entreprise et bouclement.',
         'prestations_subtitle' => 'Six domaines, un seul interlocuteur.',
         'trust_title'          => 'Un accompagnement de proximité',
+        'trust_answer'         => 'La Fiduciaire travaille avec des clients indépendants, des TPE et des PME de Suisse romande.',
         'trust_items'          => [
             'Indépendants, TPE et PME de Suisse romande',
             'Un interlocuteur unique pour la comptabilité et le pilotage',
             'Des prestations adaptées aux besoins de votre entreprise',
         ],
+        'approche_answer' => 'Un interlocuteur unique suit votre dossier, de la tenue comptable courante au bouclement annuel.',
         'cta_title' => 'Parlons de votre situation',
         'cta_text'  => 'Décrivez votre activité et vos besoins : vous recevez une proposition adaptée.',
     ],
 
     'prestations' => [
-        'title' => 'Nos prestations',
-        'intro' => 'Six domaines couverts, du quotidien comptable aux décisions de pilotage.',
+        'title'  => 'Nos prestations',
+        'answer' => 'Six prestations sont proposées : comptabilité, TVA, salaires, pilotage, création d’entreprise et bouclement.',
+        'intro'  => 'Six domaines couverts, du quotidien comptable aux décisions de pilotage.',
         'items' => [
             ['nom' => 'Comptabilité',          'texte' => 'Tenue de la comptabilité courante et suivi des pièces justificatives.'],
             ['nom' => 'TVA',                   'texte' => 'Suivi des décomptes périodiques et des échéances liées à la TVA.'],
@@ -71,16 +76,18 @@ return [
     ],
 
     'tarifs' => [
-        'title' => 'Tarifs',
-        'intro' => 'Les honoraires dépendent de votre situation et des prestations demandées.',
-        'body'  => 'Décrivez votre activité et le suivi dont vous avez besoin pour demander une proposition.',
-        'cta'   => 'Demander une proposition',
+        'title'  => 'Tarifs',
+        'answer' => 'Les honoraires dépendent de votre situation : aucune grille tarifaire n’est publiée à ce jour.',
+        'intro'  => 'Les honoraires dépendent de votre situation et des prestations demandées.',
+        'body'   => 'Décrivez votre activité et le suivi dont vous avez besoin pour demander une proposition.',
+        'cta'    => 'Demander une proposition',
     ],
 
     'zones' => [
-        'title' => 'Zones desservies',
-        'intro' => 'La Fiduciaire accompagne des clients en Suisse romande.',
-        'body'  => 'Indiquez votre lieu d’activité dans votre demande afin que nous puissions vous répondre.',
+        'title'  => 'Zones desservies',
+        'answer' => 'La Fiduciaire accompagne des clients en Suisse romande.',
+        'intro'  => 'La Fiduciaire accompagne des clients en Suisse romande.',
+        'body'   => 'Indiquez votre lieu d’activité dans votre demande afin que nous puissions vous répondre.',
     ],
 
     'devis' => [
@@ -98,7 +105,8 @@ return [
         ],
         'besoins' => ['Comptabilité', 'TVA', 'Salaires', 'Pilotage', 'Création d’entreprise', 'Bouclement', 'Plusieurs / autre'],
         'consent' => 'J’accepte que mes données soient utilisées pour traiter ma demande.',
-        'submit'  => 'Envoyer la demande',
+        'submit'  => 'Envoyer ma demande de devis',
+        'reassurance' => 'Vos informations servent uniquement à traiter cette demande. Aucun fichier comptable n’est accepté ici.',
         'indisponible' => [
             'title' => 'Demande non envoyée',
             'body'  => 'L’envoi n’a pas pu être confirmé. Revenez au formulaire pour vérifier l’état de votre demande.',
@@ -107,10 +115,10 @@ return [
 
     'mentions' => [
         'title'         => 'Mentions légales',
-        'body'          => '[À CONFIRMER] Raison sociale, numéro IDE / registre du commerce, adresse, affiliation professionnelle éventuelle, adresse e-mail et téléphone publics à fournir avant publication.',
+        'body'          => 'La Fiduciaire est un cabinet fiduciaire actif en Suisse romande. Les informations légales complètes — raison sociale, numéro IDE et registre du commerce, adresse, affiliation professionnelle éventuelle, adresse e-mail et téléphone publics — sont en cours de validation par le cabinet et seront publiées avant l’ouverture du service.',
         'privacy_title' => 'Données personnelles',
         'privacy_body'  => 'Les données transmises via le formulaire de devis servent au traitement de votre demande. Les pièces déposées dans l’espace client sont destinées au suivi de votre dossier comptable.',
-        'privacy_pending' => 'Les coordonnées du responsable et les modalités détaillées de conservation et d’exercice de vos droits doivent être confirmées avant l’ouverture du service.',
+        'privacy_pending' => 'Les coordonnées du responsable du traitement ainsi que les modalités détaillées de conservation et d’exercice de vos droits seront publiées avant l’ouverture du service.',
     ],
 
     'footer' => [
@@ -164,6 +172,7 @@ return [
     'ui' => [
         'skip'           => 'Aller au contenu',
         'menu'           => 'Navigation principale',
+        'footer_nav'     => 'Plan du site',
         'notfound_title' => 'Page introuvable',
         'notfound_body'  => 'La page demandée n’existe pas ou a été déplacée.',
         'back_home'      => 'Retour à l’accueil',

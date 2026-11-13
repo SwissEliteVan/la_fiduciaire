@@ -67,6 +67,7 @@ $inputError = static fn(string $field): string => isset($errors[$field]) ? 'aria
                     <?php if (isset($errors['consentement'])): ?><small id="erreur-consentement"><?= e($errors['consentement']) ?></small><?php endif; ?>
                 </div>
                 <button class="btn btn--primary" type="submit"><?= e(content('devis.submit')) ?></button>
+                <p class="form__reassurance"><?= e(content('devis.reassurance')) ?></p>
             </form>
         <?php endif; ?>
     </div>

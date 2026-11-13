@@ -1,5 +1,13 @@
 # NOW — tâche active unique
 
+**TASK-016 · Refonte visuelle dérivée du service (livré, recette locale).**
+
+- Date : 2026-11-13. Branche unique `main`, aucun commit, aucun déploiement.
+- Périmètre : fiche service et dérivation dans `projet/CHARTE-GRAPHIQUE.md` ; tokens 8 px et échelle typographique 1,25 dans `brand.css` ; cinq états de contrôle, focus lisible sur fond bleu, case à cocher 24 × 24, `forced-colors` dans `app.css` et `portal.css` ; hero mobile-first avec signaux de confiance ; registre de prestations ; pied de page avec plan du site et coordonnées conditionnelles ; JSON-LD `AccountingService` et `og:*` dans `layout.php`.
+- Preuves exécutées : `php -l` sur 29 fichiers PHP (0 erreur) ; `python tools/tests/devis-sans-sql.py` PASS ; `python tools/tests/portail-sans-sql.py` PASS ; rendu local des six pages en 200, un seul `h1` par page, aucun `[À CONFIRMER]` affiché, `/espace-client` toujours en 503 quand le portail est fermé ; contrastes recalculés (texte ≥ 6,34:1, focus blanc sur bleu 11,44:1).
+- NON EXÉCUTÉ : Lighthouse et captures (interdits sans accord, AGENTS §14), recette clavier et lecteur d’écran réels, mobile matériel, hébergement.
+- Décision en attente : ordre des `<source>` vidéo (WebM 3,15 Mo avant MP4 704 Ko) et variantes AVIF/WebP du poster ; aucun média n’a été régénéré.
+
 **TASK-014 / TASK-015 · Portail sans SQL et consultation cabinet (livré, recette Windows).**
 
 - Date : 2026-11-13. Branche unique `main`. Livraison fonctionnelle : `74b045f22026a0fbd138a70bde3df211ddabd267`. Fusion de `origin/main` (`f4c1b08`) : `ece9510`. Aucun déploiement.

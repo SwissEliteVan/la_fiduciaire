@@ -2,8 +2,9 @@
 
 declare(strict_types=1);
 ?>
-<section class="page-head">
-    <h1><?= e(content('mentions.title')) ?></h1>
+<section class="page-head" aria-labelledby="mentions-titre">
+    <p class="section-kicker">Informations légales</p>
+    <h1 id="mentions-titre"><?= e(content('mentions.title')) ?></h1>
 </section>
 
 <section class="section">

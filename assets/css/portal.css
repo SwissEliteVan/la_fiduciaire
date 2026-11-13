@@ -44,11 +44,14 @@
 .lf-filter { max-width: none; margin-bottom: 1rem; }
 .lf-reset { align-self: center; }
 .lf-drop {
-    border: 1px dashed var(--line-control);
+    border: 2px dashed var(--line-control);
     border-radius: var(--radius);
-    padding: 1rem;
+    padding: var(--sp-4);
     background: var(--paper);
+    transition: border-color var(--duration) ease, background-color var(--duration) ease;
 }
+.lf-drop:hover { border-color: var(--ink-soft); }
+.lf-drop:focus-within { border-color: var(--brand); border-style: solid; background: var(--white); }
 .lf-drop p { margin-bottom: .25rem; font-size: .9rem; }
 .lf-drop input { min-width: 0; }
 .lf-drop input::file-selector-button {
@@ -81,7 +84,13 @@
 .lf-piece__info { flex: 1 1 14rem; min-width: 0; overflow-wrap: anywhere; }
 .lf-piece__info p { margin: 0; font-size: .875rem; font-variant-numeric: tabular-nums; }
 .lf-piece__status { display: flex; flex-wrap: wrap; margin: 0; gap: .5rem; }
-.lf-status { padding: .3rem .65rem; border-radius: 20px; font-size: .875rem; font-weight: 650; }
+.lf-status {
+    padding: var(--sp-1) var(--sp-3);
+    border: 1px solid currentColor;
+    border-radius: 20px;
+    font-size: var(--text-sm);
+    font-weight: 650;
+}
 .lf-status--recu { background: var(--status-received-bg); color: var(--status-received); }
 .lf-status--traite { background: var(--status-treated-bg); color: var(--status-treated); }
 .lf-status--a_remplacer { background: var(--status-replace-bg); color: var(--status-replace); }
@@ -139,4 +148,16 @@
     .lf-toolbar__actions .btn, .lf-toolbar__actions form { flex: 1 1 100%; }
     .lf-toolbar__actions form .btn { width: 100%; }
     .lf-piece__status { margin-left: 0; }
+    .lf-piece .btn { flex: 1 1 auto; }
 }
+
+/* Mode contraste élevé : les statuts restent lisibles sans couleur. */
+@media (forced-colors: active) {
+    .lf-panel,
+    .lf-drop,
+    .lf-status,
+    .lf-code,
+    .lf-feedback,
+    .lf-empty { border: 1px solid CanvasText; }
+}
+
