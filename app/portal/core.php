@@ -2,6 +2,8 @@
 
 declare(strict_types=1);
 
+require_once __DIR__ . '/store.php';
+
 function lf_db(): PDO
 {
     static $db;
@@ -100,9 +102,9 @@ function lf_auth_user(): ?array
         lf_clear_identity();
         return null;
     }
-    $user = lf_query('SELECT id, dossier_id, role, version_session FROM lf_comptes WHERE id = ? AND actif = 1 AND password_hash IS NOT NULL',
-        [$_SESSION['uid']])->fetch();
-    if (!$user || (string) $user['version_session'] !== $_SESSION['version']
+    $user = lf_account_by_id((string) $_SESSION['uid']);
+    if (!$user || ($user['actif'] ?? false) !== true || ($user['password_hash'] ?? null) === null
+        || (string) $user['version_session'] !== $_SESSION['version']
         || (($user['role'] === 'client') !== ($user['dossier_id'] !== null))) {
         lf_clear_identity();
         return null;
@@ -130,31 +132,33 @@ function lf_email(string $email): ?string
 function lf_secret(): string
 {
     $secret = config('portal.secret');
-    if (!is_string($secret) || !preg_match('/^[a-f0-9]{64}$/D', $secret)) {
+    if (is_string($secret) && preg_match('/^[a-f0-9]{64}$/D', $secret)) {
+        return $secret;
+    }
+    if (!lf_files_mode()) {
         throw new RuntimeException('Secret applicatif non configuré.');
     }
-    return $secret;
+
+    // Mode fichiers privés : secret généré une fois dans le dossier privé (0600).
+    $path = lf_portal_dir() . DIRECTORY_SEPARATOR . 'secret';
+    $stored = lf_private_read($path, 256);
+    if ($stored === null) {
+        $stored = bin2hex(random_bytes(32));
+        lf_private_write($path, $stored . "\n");
+    }
+    $stored = trim($stored);
+    if (!preg_match('/^[a-f0-9]{64}$/D', $stored)) {
+        throw new RuntimeException('Secret local illisible.');
+    }
+
+    return $stored;
 }
 
 function lf_rate(string $purpose, string $subject, int $max): bool
 {
     $key = hash_hmac('sha256', $purpose . '|' . $subject, lf_secret());
-    $window = intdiv(time(), 900);
-    // L’incrément et la lecture sont sérialisés sur la ligne InnoDB.
-    $db = lf_db();
-    $db->beginTransaction();
-    try {
-        lf_query('INSERT INTO lf_limites (cle, fenetre) VALUES (?, ?)
-                  ON DUPLICATE KEY UPDATE essais = LEAST(essais + 1, 1000000)', [$key, $window]);
-        $count = (int) lf_query('SELECT essais FROM lf_limites WHERE cle = ? AND fenetre = ?', [$key, $window])->fetchColumn();
-        $db->commit();
-    } catch (Throwable $error) {
-        if ($db->inTransaction()) {
-            $db->rollBack();
-        }
-        throw $error;
-    }
-    return $count <= $max;
+
+    return lf_rate_hit($key, intdiv(time(), 900), $max);
 }
 
 function lf_categories(): array
@@ -169,6 +173,5 @@ function lf_statuses(): array
 
 function lf_audit(string $piece, array $user, string $action, ?string $status = null): void
 {
-    lf_query('INSERT INTO lf_evenements_pieces (piece_id, compte_id, action, statut) VALUES (?, ?, ?, ?)',
-        [$piece, $user['id'], $action, $status]);
+    lf_piece_event($piece, (string) $user['id'], $action, $status);
 }

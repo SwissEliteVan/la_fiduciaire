@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/core.php';
 require_once __DIR__ . '/documents.php';
+require_once __DIR__ . '/quote-store.php';
 
 function lf_portal_dispatch(string $path, string $method): void
 {
@@ -17,6 +18,8 @@ function lf_portal_dispatch(string $path, string $method): void
         '/espace-client/deposer' => ['POST'],
         '/espace-client/telecharger' => ['GET', 'HEAD'],
         '/espace-client/statut' => ['POST'],
+        '/espace-client/inviter' => ['GET', 'HEAD', 'POST'],
+        '/espace-client/demandes' => ['GET', 'HEAD'],
     ];
     if (!isset($routes[$path])) {
         lf_error('Page introuvable', 'Cette page ne fait pas partie de votre espace.', 404);
@@ -27,7 +30,7 @@ function lf_portal_dispatch(string $path, string $method): void
         lf_error('Action indisponible', 'Revenez à votre espace pour poursuivre.', 405);
         return;
     }
-    if (config('portal.enabled', false) !== true) {
+    if (!lf_portal_enabled()) {
         lf_error('Espace client non ouvert', 'Le dépôt de pièces n’est pas encore ouvert. Contactez votre interlocuteur à La Fiduciaire.', 503);
         return;
     }
@@ -113,22 +116,17 @@ function lf_portal_dispatch(string $path, string $method): void
                     lf_error('Pièce introuvable', 'Cette pièce n’est pas disponible.', 404);
                     return;
                 }
-                $db = lf_db();
-                $db->beginTransaction();
-                try {
-                    $changed = lf_query('UPDATE lf_pieces SET statut = ? WHERE id = ? AND statut <> ?', [$status, $id, $status])->rowCount();
-                    if ($changed) {
-                        lf_audit($id, $user, 'statut', $status);
-                    }
-                    $db->commit();
-                } catch (Throwable $error) {
-                    if ($db->inTransaction()) {
-                        $db->rollBack();
-                    }
-                    throw $error;
-                }
+                lf_piece_status($id, $status, (string) $user['id']);
                 $_SESSION['flash'] = 'Statut enregistré.';
                 lf_redirect('/espace-client?dossier=' . rawurlencode((string) $piece['dossier_id']) . '#mes-pieces');
+
+            case '/espace-client/inviter':
+                lf_invite($user, $method);
+                return;
+
+            case '/espace-client/demandes':
+                lf_quotes($user);
+                return;
 
             default:
                 lf_show_dashboard($user);
@@ -153,11 +151,10 @@ function lf_login(string $method): void
             $error = 'Trop de tentatives. Réessayez dans quelques minutes.';
             $status = 429;
         } else {
-            $user = $email !== '' ? lf_query('SELECT id, role, dossier_id, password_hash, version_session FROM lf_comptes
-                WHERE email = ? AND actif = 1', [$email])->fetch() : false;
+            $user = $email !== '' ? lf_account_by_email($email) : null;
             $hash = $user['password_hash'] ?? '$2y$12$0K/.EzGMS7C8Uf7wTyPnG.OV3sVWv2P6Gh17OVslGlDncZUOGfM8W';
             $verified = strlen($password) <= 72 && !str_contains($password, "\0") && password_verify($password, $hash);
-            if ($verified && $user && $user['password_hash'] !== null
+            if ($verified && is_array($user) && ($user['password_hash'] ?? null) !== null
                 && (($user['role'] === 'client') === ($user['dossier_id'] !== null))) {
                 lf_clear_identity();
                 $_SESSION['uid'] = (string) $user['id'];
@@ -191,12 +188,8 @@ function lf_activate(string $method): void
             $status = 422;
         } else {
             $hash = hash('sha256', $token);
-            $exists = lf_query('SELECT id FROM lf_comptes WHERE activation_hash = ? AND activation_expire > UTC_TIMESTAMP() AND actif = 1',
-                [$hash])->fetchColumn();
-            $updated = $exists ? lf_query('UPDATE lf_comptes SET password_hash = ?, activation_hash = NULL, activation_expire = NULL,
-                version_session = version_session + 1 WHERE id = ? AND activation_hash = ? AND activation_expire > UTC_TIMESTAMP() AND actif = 1',
-                [password_hash($password, PASSWORD_BCRYPT, ['cost' => 12]), $exists, $hash])->rowCount() : 0;
-            if ($updated === 1) {
+            $updated = lf_account_activate($hash, password_hash($password, PASSWORD_BCRYPT, ['cost' => 12]));
+            if ($updated) {
                 lf_clear_identity();
                 $_SESSION['activated'] = true;
                 lf_redirect('/espace-client/connexion');
@@ -205,7 +198,12 @@ function lf_activate(string $method): void
             $status = 422;
         }
     }
-    render('portal-access', ['mode' => 'activate', 'pageTitle' => 'Activation — La Fiduciaire', 'error' => $error], $status);
+    render('portal-access', [
+        'mode' => 'activate',
+        'pageTitle' => 'Activation — La Fiduciaire',
+        'error' => $error,
+        'code' => preg_match('/^[a-f0-9]{64}$/D', lf_text($_GET, 'code')) === 1 ? lf_text($_GET, 'code') : '',
+    ], $status);
 }
 
 function lf_show_dashboard(array $user, ?string $error = null, int $status = 200, ?string $period = null, ?string $category = null): void
@@ -219,4 +217,80 @@ function lf_show_dashboard(array $user, ?string $error = null, int $status = 200
     unset($_SESSION['flash']);
     $data['pageTitle'] = ($user['role'] === 'cabinet' ? 'Dossiers clients' : 'Mes pièces comptables') . ' — La Fiduciaire';
     render('portal-dashboard', $data, $status);
+}
+/** Invitation cabinet : crée le dossier au besoin et affiche le code une seule fois. */
+function lf_invite(array $user, string $method): void
+{
+    if ($user['role'] !== 'cabinet') {
+        lf_error('Action réservée au cabinet', 'Seul le cabinet peut inviter un client.', 403);
+        return;
+    }
+
+    $error = null;
+    $status = 200;
+    $once = $_SESSION['invite_once'] ?? null;
+    unset($_SESSION['invite_once']);
+
+    if ($method === 'POST') {
+        if (!lf_rate('invitation', (string) $user['id'], 20)) {
+            $error = 'Trop d’invitations en peu de temps. Réessayez dans quelques minutes.';
+            $status = 429;
+        } else {
+            $email = lf_email(lf_text($_POST, 'email'));
+            $dossierId = lf_text($_POST, 'dossier');
+            $name = trim(lf_text($_POST, 'dossier_nom'));
+            $nameLength = preg_match_all('/./us', $name);
+
+            if ($email === null) {
+                $error = 'Indiquez une adresse e-mail valide.';
+                $status = 422;
+            } elseif ($dossierId !== '' && (!ctype_digit($dossierId) || lf_dossier_name($dossierId) === null)) {
+                $error = 'Choisissez un dossier existant dans la liste.';
+                $status = 422;
+            } elseif ($dossierId === '' && ($name === '' || $nameLength < 2 || $nameLength > 160)) {
+                $error = 'Indiquez un nom de dossier de 2 à 160 caractères.';
+                $status = 422;
+            } elseif (lf_account_by_email($email) !== null) {
+                $error = 'Un compte existe déjà pour cette adresse.';
+                $status = 422;
+            } else {
+                try {
+                    if ($dossierId === '') {
+                        $dossierId = lf_dossier_create($name);
+                    }
+                    $token = bin2hex(random_bytes(32));
+                    lf_account_create($email, $dossierId, false, hash('sha256', $token), time() + 86400);
+                    $_SESSION['invite_once'] = [
+                        'email'   => $email,
+                        'code'    => $token,
+                        'dossier' => lf_dossier_name($dossierId),
+                    ];
+                    lf_redirect('/espace-client/inviter');
+                } catch (DomainException $exception) {
+                    $error = $exception->getMessage();
+                    $status = 422;
+                }
+            }
+        }
+    }
+
+    render('portal-invite', [
+        'pageTitle' => 'Inviter un client — La Fiduciaire',
+        'dossiers'  => lf_dossiers(),
+        'error'     => $error,
+        'once'      => is_array($once) ? $once : null,
+    ], $status);
+}
+
+/** Demande de devis : consultation réservée au cabinet. */
+function lf_quotes(array $user): void
+{
+    if ($user['role'] !== 'cabinet') {
+        lf_error('Action réservée au cabinet', 'Les demandes de devis ne sont visibles que par le cabinet.', 403);
+        return;
+    }
+    render('portal-quotes', [
+        'pageTitle' => 'Demandes de devis — La Fiduciaire',
+        'quotes'    => lf_quote_list(100),
+    ]);
 }

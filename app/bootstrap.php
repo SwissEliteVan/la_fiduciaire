@@ -135,3 +135,12 @@ function render(string $view, array $data = [], int $status = 200): void
 
     require __DIR__ . '/views/layout.php';
 }
+
+/**
+ * Portail : fermé par défaut. Il est ouvert explicitement par `portal.enabled`
+ * (voir `app/config.recette.php` pour la recette locale sans SQL).
+ */
+function lf_portal_enabled(): bool
+{
+    return config('portal.enabled', false) === true;
+}

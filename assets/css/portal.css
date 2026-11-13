@@ -87,3 +87,56 @@
 .lf-status--a_remplacer { background: var(--status-replace-bg); color: var(--status-replace); }
 .lf-pagination { justify-content: flex-start; margin: 1rem 0 0; }
 #mes-pieces { scroll-margin-top: 12rem; }
+
+.lf-toolbar__actions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: .5rem;
+}
+.lf-toolbar__actions form { margin: 0; }
+.lf-panel--form { margin-top: 1.5rem; }
+.lf-code-panel { margin-top: 1.5rem; border-top: 3px solid var(--brand); }
+.lf-code {
+    margin: .75rem 0;
+    padding: .85rem 1rem;
+    overflow-wrap: anywhere;
+    background: var(--paper-alt);
+    border: 1px solid var(--line-control);
+    border-radius: var(--radius-control);
+    font-variant-numeric: tabular-nums;
+}
+.lf-code code { font-size: .95rem; letter-spacing: .04em; }
+.lf-quotes { display: grid; gap: 0; }
+.lf-quote {
+    padding: 1rem 0;
+    border-top: 1px solid var(--line);
+}
+.lf-quote:first-child { border-top: 0; }
+.lf-quote__head {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    gap: .35rem 1rem;
+}
+.lf-quote__meta { margin: .2rem 0 .45rem; color: var(--ink-soft); font-size: .9rem; }
+.lf-quote__need { margin: 0 0 .45rem; font-weight: 650; }
+.lf-quote__message {
+    margin: 0;
+    padding: .75rem .9rem;
+    white-space: pre-line;
+    overflow-wrap: anywhere;
+    background: var(--paper);
+    border-left: 3px solid var(--line-control);
+    border-radius: 0 var(--radius-control) var(--radius-control) 0;
+}
+.lf-piece select { min-height: 44px; }
+.lf-piece .btn, .lf-filter .btn { min-height: 44px; }
+
+@media (max-width: 640px) {
+    .lf-toolbar, .lf-piece { align-items: stretch; }
+    .lf-toolbar__actions { width: 100%; }
+    .lf-toolbar__actions .btn, .lf-toolbar__actions form { flex: 1 1 100%; }
+    .lf-toolbar__actions form .btn { width: 100%; }
+    .lf-piece__status { margin-left: 0; }
+}

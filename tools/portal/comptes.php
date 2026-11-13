@@ -2,6 +2,12 @@
 
 declare(strict_types=1);
 
+/**
+ * Gestion CLI des comptes : fonctionne en mode fichiers privés (sans SQL)
+ * comme en mode MySQL. Le code d'activation n'est affiché qu'ici : à remettre
+ * par un canal privé, jamais dans un commit ou un journal.
+ */
+
 if (PHP_SAPI !== 'cli') {
     http_response_code(404);
     exit;
@@ -12,9 +18,12 @@ require APP_ROOT . '/app/portal/core.php';
 $command = $argv[1] ?? '';
 $email = lf_email($argv[2] ?? '');
 $extra = trim($argv[3] ?? '');
-if (!$email || !in_array($command, ['nouveau-client', 'client-dossier', 'cabinet', 'reinitialiser', 'revoquer'], true)
-    || ($command === 'nouveau-client' && ($extra === '' || strlen($extra) > 160 || !preg_match('//u', $extra)))
-    || ($command === 'client-dossier' && (!ctype_digit($extra) || (int) $extra < 1))) {
+$valid = in_array($command, ['nouveau-client', 'client-dossier', 'cabinet', 'reinitialiser', 'revoquer'], true)
+    && $email !== null
+    && ($command !== 'nouveau-client' || ($extra !== '' && strlen($extra) <= 160 && preg_match('//u', $extra) === 1))
+    && ($command !== 'client-dossier' || (ctype_digit($extra) && (int) $extra >= 1));
+
+if (!$valid) {
     fwrite(STDERR, "Usage : php tools/portal/comptes.php nouveau-client EMAIL 'NOM DU DOSSIER'\n"
         . "        php tools/portal/comptes.php client-dossier EMAIL ID_DOSSIER\n"
         . "        php tools/portal/comptes.php cabinet|reinitialiser|revoquer EMAIL\n");
@@ -22,52 +31,44 @@ if (!$email || !in_array($command, ['nouveau-client', 'client-dossier', 'cabinet
 }
 
 try {
-    $db = lf_db();
-    $db->beginTransaction();
     if ($command === 'revoquer') {
-        $changed = lf_query('UPDATE lf_comptes SET actif = 0, activation_hash = NULL, activation_expire = NULL,
-            version_session = version_session + 1 WHERE email = ? AND actif = 1', [$email])->rowCount();
-        if ($changed !== 1) {
+        if (!lf_account_revoke($email)) {
             throw new DomainException('Compte actif introuvable.');
         }
-        $db->commit();
         fwrite(STDOUT, "Accès révoqué et sessions invalidées.\n");
         exit;
     }
 
     $token = bin2hex(random_bytes(32));
     $hash = hash('sha256', $token);
+    $expire = time() + 86400;
     $dossier = null;
+
     if ($command === 'reinitialiser') {
-        $changed = lf_query('UPDATE lf_comptes SET activation_hash = ?, activation_expire = DATE_ADD(UTC_TIMESTAMP(), INTERVAL 24 HOUR),
-            password_hash = NULL, version_session = version_session + 1 WHERE email = ? AND actif = 1', [$hash, $email])->rowCount();
-        if ($changed !== 1) {
+        if (!lf_account_reset($email, $hash, $expire)) {
             throw new DomainException('Compte actif introuvable.');
         }
     } else {
         if ($command === 'nouveau-client') {
-            lf_query('INSERT INTO lf_dossiers (nom) VALUES (?)', [$extra]);
-            $dossier = $db->lastInsertId();
+            $dossier = lf_dossier_create($extra);
         } elseif ($command === 'client-dossier') {
-            $dossier = lf_query('SELECT id FROM lf_dossiers WHERE id = ?', [$extra])->fetchColumn();
-            if (!$dossier) {
+            $dossier = lf_dossier_name($extra) === null ? null : $extra;
+            if ($dossier === null) {
                 throw new DomainException('Dossier introuvable.');
             }
         }
-        lf_query('INSERT INTO lf_comptes (dossier_id, email, role, activation_hash, activation_expire)
-            VALUES (?, ?, ?, ?, DATE_ADD(UTC_TIMESTAMP(), INTERVAL 24 HOUR))',
-            [$dossier, $email, $command === 'cabinet' ? 'cabinet' : 'client', $hash]);
+        if (lf_account_by_email($email) !== null) {
+            throw new DomainException('Un compte existe déjà pour cette adresse.');
+        }
+        lf_account_create($email, $dossier, $command === 'cabinet', $hash, $expire);
     }
-    $db->commit();
+
     if ($dossier !== null) {
         fwrite(STDOUT, "Identifiant du dossier : $dossier\n");
     }
     fwrite(STDOUT, "Code à usage unique, valable 24 h. À remettre par canal privé :\n$token\n");
 } catch (Throwable $error) {
-    if (isset($db) && $db->inTransaction()) {
-        $db->rollBack();
-    }
     fwrite(STDERR, $error instanceof DomainException ? $error->getMessage() . "\n"
-        : "Opération non effectuée. Vérifiez la configuration, la migration et l’unicité du compte.\n");
+        : "Opération non effectuée. Vérifiez la configuration et l’unicité du compte.\n");
     exit(1);
 }

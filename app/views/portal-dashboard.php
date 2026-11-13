@@ -3,7 +3,7 @@ declare(strict_types=1);
 $cabinet = $user['role'] === 'cabinet';
 $categories = lf_categories();
 $statuses = lf_statuses();
-$more = count($pieces) > LF_PAGE_SIZE;
+$more = $more ?? (count($pieces) > LF_PAGE_SIZE);
 $pieces = array_slice($pieces, 0, LF_PAGE_SIZE);
 $pageUrl = static fn(int $target): string => '/espace-client?' . http_build_query(array_filter([
     'periode' => $filters['period'],
@@ -19,10 +19,16 @@ $pageUrl = static fn(int $target): string => '/espace-client?' . http_build_quer
             <h1 id="tableau-titre"><?= $cabinet ? 'Dossiers clients' : 'Mes pièces comptables' ?></h1>
             <p class="lf-muted"><?= $cabinet ? 'Consultez les dépôts et mettez à jour leur statut.' : 'Dossier · ' . e($dossier) ?></p>
         </div>
-        <form method="post" action="/espace-client/deconnexion">
-            <input type="hidden" name="csrf" value="<?= e($_SESSION['csrf']) ?>">
-            <button type="submit" class="btn btn--secondary">Me déconnecter</button>
-        </form>
+        <div class="lf-toolbar__actions">
+            <?php if ($cabinet): ?>
+                <a class="btn btn--secondary" href="/espace-client/demandes">Demandes de devis</a>
+                <a class="btn btn--secondary" href="/espace-client/inviter">Inviter un client</a>
+            <?php endif; ?>
+            <form method="post" action="/espace-client/deconnexion">
+                <input type="hidden" name="csrf" value="<?= e($_SESSION['csrf']) ?>">
+                <button type="submit" class="btn btn--secondary">Me déconnecter</button>
+            </form>
+        </div>
     </div>
 
     <?php if ($notice): ?><p class="lf-feedback lf-feedback--ok" role="status"><?= e($notice) ?></p><?php endif; ?>
@@ -53,7 +59,7 @@ $pageUrl = static fn(int $target): string => '/espace-client?' . http_build_quer
                 </div>
                 <div class="form__row lf-drop">
                     <label for="depot-fichiers">Sélectionner les fichiers</label>
-                    <p id="depot-aide" class="lf-muted">PDF, JPG ou PNG · 5 fichiers maximum par envoi · 10 Mo par fichier.</p>
+                    <p id="depot-aide" class="lf-muted">PDF, JPG ou PNG · 5 fichiers maximum par envoi · <?= e(lf_upload_limit_label()) ?> par fichier.</p>
                     <input id="depot-fichiers" name="pieces[]" type="file" accept=".pdf,.jpg,.jpeg,.png" multiple required aria-describedby="depot-aide">
                 </div>
                 <button type="submit" class="btn btn--primary">Déposer les pièces</button>

@@ -23,9 +23,11 @@ return [
     ],
     'portal' => [
         'enabled'      => false,
-        'storage_dir'  => '',  // Chemin absolu hors racine publique, permissions 0700.
-        'secret'       => '',  // bin2hex(random_bytes(32)), secret local uniquement.
-        'scanner'      => '',  // Exécutable clamscan avec signatures à jour (requis hors test local).
+        'backend'      => 'files', // files = JSON privé, sans SQL ; mysql = option historique.
+        'storage_dir'  => '',  // Vide = dossier privé créé à côté du site, hors racine web.
+        'secret'       => '',  // Vide en mode fichiers = secret généré dans le dossier privé.
+        'scanner'      => '',  // Exécutable clamscan externe, signatures à jour (hors recette).
+        'scanner_command' => [], // Tableau argv réservé à la recette locale sur 127.0.0.1.
     ],
     'quote_enabled' => true,
     'quote_backend' => 'files',  // files = privé, sans SQL ; mysql = option historique.

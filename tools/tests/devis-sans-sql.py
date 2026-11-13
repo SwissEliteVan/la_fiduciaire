@@ -37,7 +37,7 @@ def main():
 
         assert run('-r', 'echo extension_loaded("pdo_mysql") ? "MYSQL" : "SANS MYSQL";') == 'SANS MYSQL'
         with (root / 'server.log').open('w') as log:
-            server = subprocess.Popen([php, '-n', '-d', f'session.save_path={sessions}',
+            server = subprocess.Popen([php, '-n', '-d', f'session.save_path={sessions.resolve().as_posix()}',
                                        '-S', f'127.0.0.1:{port}', 'index.php'], cwd=app, stdout=log, stderr=log)
             cookie = None
 
@@ -95,14 +95,17 @@ def main():
                 request('/devis', 422, quote | {'site_web': 'non vide'})
                 storage = Path(run('tools/devis.php', 'chemin').strip())
                 assert not storage.is_relative_to(app)
-                assert storage.stat().st_mode & 0o777 == 0o700
+                if os.name != 'nt':
+                    assert storage.stat().st_mode & 0o777 == 0o700
                 assert not list(storage.glob('[a-f0-9]*.json'))
                 request('/devis', 303, quote)
                 request('/devis', 303, quote)
                 page, _ = request('/devis', 200)
                 assert 'Votre demande a été enregistrée' in page
                 files = list(storage.glob('[a-f0-9]*.json'))
-                assert len(files) == 1 and files[0].stat().st_mode & 0o777 == 0o600
+                assert len(files) == 1
+                if os.name != 'nt':
+                    assert files[0].stat().st_mode & 0o777 == 0o600
                 assert quote['envoi'] in run('tools/devis.php', 'liste')
                 data = json.loads(run('tools/devis.php', 'lire', quote['envoi']))
                 assert data['email'] == quote['email'] and data['message'] == quote['message']
@@ -114,10 +117,11 @@ def main():
                 for _ in range(7):
                     request('/devis', 422, quote | {'email': 'invalide'})
                 request('/devis', 429, quote)
-                storage.chmod(0o755)
-                page, _ = request('/devis', 503, quote)
-                assert 'Votre demande a été enregistrée' not in page and str(storage) not in page
-                storage.chmod(0o700)
+                if os.name != 'nt':
+                    storage.chmod(0o755)
+                    page, _ = request('/devis', 503, quote)
+                    assert 'Votre demande a été enregistrée' not in page and str(storage) not in page
+                    storage.chmod(0o700)
                 assert len(list(storage.glob('[a-f0-9]*.json'))) == 1
             finally:
                 server.terminate()

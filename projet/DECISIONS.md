@@ -83,3 +83,17 @@ Mise à jour ADR-003 : le dépôt GitHub et sa branche `main` existent. Le propr
 - **Décision (2026-11-13).** Pour ouvrir rapidement le parcours vitrine, un devis validé devient un fichier JSON individuel et privé, écrit sous verrou avant confirmation. Pas de configuration SQL, de notification e-mail ni de compte requis pour un prospect.
 - **Alternative.** SQLite introduit une extension à vérifier. MySQL reste un choix explicite et inchangé pour le portail. Aucun transfert ou effacement automatique des devis entre modes.
 - **Exploitation.** Le processus PHP doit pouvoir écrire hors racine publique. Les fichiers sont lisibles par un opérateur en CLI ou dans le gestionnaire privé de l’hébergeur. Il faut sauvegarder et contrôler ce dossier avant ouverture réelle.
+
+## ADR-006 — Mode de stockage local privé du portail (sans SQL)
+
+- **Décision (2026-11-13).** Ajouter `portal.backend = files` : comptes, dossiers, métadonnées, événements et limites dans un état JSON verrouillé (`flock`, écriture temporaire + `rename`), pièces binaires sous `documents/`. La racine est hors racine web et hors dépôt, créée en 0700, fichiers en 0600. `portal.backend = mysql` reste l’option historique, avec les mêmes contrôles applicatifs.
+- **Alternative rejetée.** SQLite : l’extension `pdo_sqlite` n’est pas disponible dans l’environnement de recette vérifié (PHP 8.5.5) ; MySQL n’y est pas disponible non plus. Un stockage SaaS ou une base externe serait une décision distincte.
+- **Sécurité.** Le backend est choisi côté serveur uniquement. Chaque action relit l’identité et le dossier ; chaque téléchargement revérifie le dossier, la taille et la signature binaire. Le secret de limitation est configuré ou généré une fois dans le dossier privé. Aucun lien direct, aucun nom de fichier client sur le disque.
+- **Conséquences.** Le JSON convient à un MVP et à une recette ; il n’est pas un moteur transactionnel multi-écrivains. Pour une montée en charge ou plusieurs instances PHP, passer à MySQL après recette. Sauvegarder ensemble l’état JSON et le dossier `documents/`.
+- **Test d’invalidation.** Toute ouverture à des données réelles exige la recette MySQL ou une revue de capacité du stockage fichiers, ainsi que la sauvegarde/restauration prouvée.
+
+## ADR-007 — Compatibilité Windows de la recette, sans retirer les contrôles Linux
+
+- **Décision (2026-11-13).** Les chemins privés sont validés par des helpers portables (lettre de lecteur, séparateurs, comparaison insensible à la casse sous Windows). Les permissions POSIX 0700/0600 restent obligatoires sur Unix. Sous Windows, PHP ne restitue pas les ACL NTFS : les contrôles de mode sont donc remplacés par la vérification du placement hors racine web, de l’absence de lien et de l’écriture possible.
+- **Scanner.** Un `scanner_command` en tableau n’est accepté que sur `env=local`, `php -S` et boucle locale, pour le double de test `tools/tests/scanner-factice.php`. Hors de ce cas, seul un exécutable absolu externe est accepté ; un scanner réel reste obligatoire avant ouverture.
+- **Conséquences.** La recette Windows prouve les parcours et le cloisonnement, pas les permissions Unix ni l’antivirus. La production Hostinger doit être recettée sur Linux avec `pdo_mysql` (ou le backend fichiers), un scanner réel et les permissions vérifiées.

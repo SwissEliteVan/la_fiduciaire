@@ -27,7 +27,7 @@ if ($activated) {
             <?php if ($activate): ?>
                 <div class="form__row">
                     <label for="code">Code d’accès</label>
-                    <input id="code" name="code" required maxlength="64" minlength="64" autocomplete="off" autocapitalize="none" spellcheck="false">
+                    <input id="code" name="code" required maxlength="64" minlength="64" autocomplete="off" autocapitalize="none" spellcheck="false" value="<?= e($code ?? '') ?>">
                 </div>
             <?php else: ?>
                 <div class="form__row">

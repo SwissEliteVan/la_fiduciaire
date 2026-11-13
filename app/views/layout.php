@@ -5,7 +5,7 @@ declare(strict_types=1);
 /** @var string $content Contenu HTML déjà rendu par la vue. */
 $privatePage = str_starts_with($view, 'portal-');
 $quotePage = request_path() === '/devis';
-$showPortal = $privatePage || config('portal.enabled', false) === true;
+$showPortal = $privatePage || lf_portal_enabled();
 $pageTitle = $pageTitle ?? content('pages.' . $view . '.title', content('site.name'));
 $pageDescription = content('pages.' . $view . '.description', content('site.description'));
 ?>

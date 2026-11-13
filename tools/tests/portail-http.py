@@ -1,5 +1,11 @@
 #!/usr/bin/env python3
-"""Recette sur une base et un stockage jetables. Ne pas exécuter en production."""
+"""Recette MySQL optionnelle, sur une base et un stockage jetables.
+
+Exige une configuration de recette avec `portal.backend => 'mysql'`,
+`quote_backend => 'mysql'`, un secret local et un scanner réel (ou son double
+Unix explicitement local). Sans `pdo_mysql`, cette recette n'est pas exécutable.
+Ne pas exécuter en production.
+"""
 import base64
 import http.client
 import os

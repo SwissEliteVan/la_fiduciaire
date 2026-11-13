@@ -90,7 +90,7 @@ declare(strict_types=1);
     </ul>
 </section>
 
-<?php if (config('portal.enabled', false) === true): ?>
+<?php if (lf_portal_enabled()): ?>
     <section class="section section--muted" aria-labelledby="espace-titre">
         <div class="section__head">
             <h2 id="espace-titre">Vos pièces comptables, au même endroit</h2>

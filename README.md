@@ -1,148 +1,215 @@
-# La Fiduciaire — vitrine et portail client
+# La Fiduciaire
 
-Site vitrine de **La Fiduciaire** (indépendants, TPE et PME de Suisse romande) :
-présentation des prestations, tarifs, zones desservies et demande de devis. Le portail
-sur invitation permet le dépôt de pièces par dossier, le suivi et le traitement côté cabinet.
+La Fiduciaire est un site vitrine en français pour les indépendants, TPE et PME de Suisse romande. Il présente les prestations, les tarifs, les zones desservies et permet d’envoyer une demande de devis.
 
-- [Charte graphique](projet/CHARTE-GRAPHIQUE.md)
-- [Prompt de finalisation](projet/PROMPT-FINALISATION.md)
-- [État de la recette](projet/NOW.md)
+## DÉMARRAGE RAPIDE — COMMANDES DEV
 
-**Stack :** PHP 8.3 natif. Les devis s’enregistrent par défaut en fichiers privés, sans SQL.
-MySQL reste réservé au portail et au mode de devis optionnel. Cible : Hostinger Business mutualisé.
+Toutes les commandes ci-dessous s’exécutent depuis la racine du projet : `C:\Users\Administrateur\Local Sites\la_fiduciaire`.
 
-## Structure
+Le projet n’a pas de `package.json`, de lockfile npm/pnpm/yarn/bun, de `composer.json`, de `pyproject.toml`, de `Makefile` ni de configuration Docker. Il n’y a donc pas de commande d’installation de dépendances ni de build frontend à lancer. La source de cette constatation est l’inventaire des fichiers du dépôt ; la stack est décrite dans [`projet/DECISIONS.md`](./projet/DECISIONS.md).
 
-```
-index.php                 contrôleur frontal (routes, méthode HTTP)
-.htaccess                 réécriture, en-têtes, refus d'accès aux dossiers internes
-app/
-  bootstrap.php           configuration, contenu localisé, helpers, rendu
-  routes.php              table des routes
-  config.example.php      modèle de configuration (aucun secret)
-  content/fr.php          textes français (source unique)
-  views/                  gabarit + pages
-assets/css/               marque, vitrine responsive et portail
-assets/brand/             logotype horizontal et icône LF fournis
-assets/js/hero.js         pause/lecture du hero, respect du mouvement réduit
-assets/media-geres/       emplacement prévu pour les médias gérés (vide au départ)
-database/schema.sql       table des devis
-database/portal.sql       migration additive des dossiers, comptes, pièces et événements
-app/portal/               accès, dépôt, téléchargement privé, historique et devis
-tools/portal/comptes.php  gestion CLI des invitations et révocations
-tools/devis.php           lecture privée des demandes de devis en CLI
-tools/tests/              recettes HTTP vitrine et portail
-tools/media-manager/      gestionnaire local de médias (outil, non publié)
-storage/                  JSON de gestion, imports temporaires, sauvegardes (ignoré par Git)
-hero-video.webm           source fournie par le propriétaire (ne pas modifier)
-hero-video.mp4            dérivé H.264 1080p/30, AAC 96k
-hero-video-poster.jpg     poster 1920×1080
-projet/                   PRD, roadmap, backlog, décisions, NOW
-instructions/             consignes du kit (référence, non publiées)
+### 1. Préparer la configuration locale
+
+Source : [`app/config.example.php`](./app/config.example.php) et [`.gitignore`](./.gitignore).
+
+```powershell
+Copy-Item app/config.example.php app/config.local.php
 ```
 
-## Démarrer la vitrine et recevoir les devis sans SQL
+Ouvrez ensuite `app/config.local.php` et renseignez uniquement les paramètres locaux de la base. Ce fichier est ignoré par Git et ne doit jamais contenir de valeur publiée dans le dépôt.
+
+### 2. Préparer la base MySQL
+
+Source : [`database/schema.sql`](./database/schema.sql). Prérequis : PHP 8.3 côté hébergement, l’extension `pdo_mysql` et une base MySQL ou MariaDB.
+
+```bash
+mysql -u <utilisateur> -p <base> < database/schema.sql
+```
+
+Les valeurs entre chevrons sont à remplacer dans votre terminal ; aucun mot de passe ne doit être écrit dans le README ou dans Git.
+
+### 3. Démarrer le serveur PHP local
+
+Source : [`index.php`](./index.php), qui sert de contrôleur frontal.
 
 ```bash
 php -S 127.0.0.1:8123 index.php
 ```
 
-Ouvrir `http://127.0.0.1:8123/devis`. Pas de migration, d’extension PDO, de clé ni de fichier de configuration pour le mode par défaut. En hébergement, la vitrine exige PHP et le formulaire exige HTTPS ainsi qu’un dossier de stockage privé inscriptible par PHP.
+Le site est alors accessible à l’adresse locale `http://127.0.0.1:8123`. Cette commande démarre le serveur de développement PHP intégré ; elle ne constitue pas un déploiement.
 
-Au premier envoi, PHP crée un dossier privé en mode 0700 à côté du dossier du site. Si le parent n’est pas inscriptible, ou si le site est installé sous une autre racine web, régler `quote_storage_dir` dans `app/config.local.php` sur un chemin absolu dédié hors racine web et hors dépôt, en mode 0700. Aucun repli vers un emplacement public. Avec un ancien fichier local, mettre `quote_enabled` à `true` et utiliser `quote_backend => 'files'` (ou retirer le réglage du mode pour prendre le défaut). Ne pas versionner ce fichier local.
+### 4. Lancer les tests ciblés
 
-### Consulter les demandes
+Test de validation sans base de données, depuis la racine :
 
-```bash
-php tools/devis.php liste
-php tools/devis.php lire IDENTIFIANT
-php tools/devis.php chemin
+```powershell
+php tools/tests/devis-check.php
 ```
 
-La commande `liste` montre l’heure UTC et l’identifiant. `lire` affiche la demande uniquement en terminal. Avec un gestionnaire de fichiers, utiliser le chemin indiqué par `chemin` et consulter les fichiers JSON privés, un par demande. Il n’y a ni boîte de réception web ni notification e-mail automatique. Sauvegarder ce dossier de façon privée et ne pas le copier dans Git ou dans un répertoire web. Si le site change de chemin, configurer explicitement le dossier existant ou restaurer sa sauvegarde. Valider la notice et la conservation avant réception de données réelles.
+Test HTTP, depuis un second terminal. Le premier terminal doit garder le serveur lancé :
 
-Recette isolée, sans accès aux demandes existantes :
-
-```bash
-python3 tools/tests/devis-sans-sql.py
+```powershell
+$env:DEVIS_THROTTLE_FILE = "$PWD\storage\devis-throttle.test.json"
+php -S 127.0.0.1:8123 index.php
 ```
 
-## Gestionnaire local de médias
+Puis, dans le second terminal, toujours depuis la racine :
 
-Outil local (PHP natif, aucune dépendance, aucun service externe) pour inventorier,
-classer et remplacer les médias du projet sans édition manuelle.
+```powershell
+php tools/tests/devis-http.php http://127.0.0.1:8123
+```
+
+Sources : [`tools/tests/devis-check.php`](./tools/tests/devis-check.php) et [`tools/tests/devis-http.php`](./tools/tests/devis-http.php). Ces tests couvrent la vitrine, le formulaire, le CSRF, les erreurs de validation, le piège à robots, la limitation de tentatives et le comportement sans base. L’insertion MySQL réelle n’est pas prouvée localement tant que `pdo_mysql` et une base de recette ne sont pas disponibles.
+
+### 5. Vérifier l’outil local de médias
+
+Source : [`tools/media-manager/lancer.ps1`](./tools/media-manager/lancer.ps1) et [`tools/media-manager/tests/`](./tools/media-manager/tests/).
 
 ```powershell
 powershell -ExecutionPolicy Bypass -File tools/media-manager/lancer.ps1
 ```
 
-Équivalent manuel :
-
-```bash
-php -d upload_max_filesize=256M -d post_max_size=300M -S 127.0.0.1:8124 tools/media-manager/server.php
-```
-
-- Galerie : <http://127.0.0.1:8124/> (écoute locale uniquement).
-- Inventaire : images, vidéos, audio, SVG ; formats, dimensions, poids, empreintes,
-  doublons, variantes regroupées et usages fichier:ligne.
-- Décisions par média : CONSERVER, SUPPRIMER (candidat), REMPLACER (sélecteur de
-  fichiers local, comparaison avant/après), NON DÉCIDÉ.
-- JSON de gestion : `storage/media-manager/media-manager.json` ; imports temporaires
-  dans `storage/media-manager/imports/` ; sauvegardes, corbeille et rapports dans
-  `storage/media-manager/backups/` et `storage/media-manager/logs/`.
-- Aucune suppression avant validation explicite **et** saisie de `APPLIQUER`.
-  Les fichiers retirés sont déplacés en corbeille restaurable ; les NON DÉCIDÉS ne
-  sont jamais modifiés.
-- Contrat média vérifié avant application (AVIF/WebP/JPEG, largeurs, dimensions,
-  poster vidéo, attributs, budgets de poids). Les écarts bloquants exigent une
-  dérogation motivée, enregistrée dans le JSON.
-
-Vérifications en ligne de commande :
+Vérifications sans lancer l’interface :
 
 ```bash
 php tools/media-manager/tests/inventory-check.php
 php tools/media-manager/tests/contract-check.php
 ```
 
-## Portail documentaire et mode SQL optionnel
+Il n’y a pas de commande de build dans les fichiers du projet. `php -S` sert uniquement au développement local.
 
-L’espace client est désactivé par défaut. Son activation et le passage des devis à MySQL ne sont pas requis pour la vitrine. Utiliser uniquement des comptes et fichiers fictifs en recette.
+## Sommaire
 
-1. Sur une base MySQL/MariaDB dédiée, appliquer les migrations avec un compte autorisé à créer les tables.
+- [Comprendre le projet](#comprendre-le-projet)
+- [Installation pas à pas](#installation-pas-à-pas)
+- [Utiliser le site](#utiliser-le-site)
+- [Médias réellement présents](#médias-réellement-présents)
+- [Tests et état connu](#tests-et-état-connu)
+- [Dépannage](#dépannage)
+- [Organisation technique](#organisation-technique)
+- [Git et déploiement](#git-et-déploiement)
+- [Documents utiles](#documents-utiles)
 
-   ```bash
-   mysql -u <utilisateur> -p <base> < database/schema.sql
-   mysql -u <utilisateur> -p <base> < database/portal.sql
+## Comprendre le projet
+
+Le navigateur demande une URL à `index.php`. Le fichier [`app/routes.php`](./app/routes.php) associe chaque chemin à une vue, [`app/bootstrap.php`](./app/bootstrap.php) charge la configuration et le contenu français, puis [`app/views/layout.php`](./app/views/layout.php) ajoute le gabarit commun.
+
+La stack actuelle est volontairement simple : PHP natif, templates PHP, PDO pour MySQL et Apache avec [`.htaccess`](./.htaccess) en hébergement. Aucun framework ni service externe n’est requis.
+
+## Installation pas à pas
+
+1. Installez PHP CLI sur votre machine et vérifiez sa présence :
+
+   ```powershell
+   php -v
    ```
 
-2. Copier `app/config.example.php` en `app/config.local.php`, renseigner la base et générer le secret local avec `php -r 'echo bin2hex(random_bytes(32)), PHP_EOL;'`. Protéger le fichier de configuration et ne jamais le committer. Renseigner `portal.storage_dir` avec un répertoire absolu dédié, appartenant à l’utilisateur PHP, en mode 0700, hors projet et hors racine web. Le serveur doit reconnaître HTTPS via sa configuration de confiance, sans se fier aux en-têtes fournis par le client.
-3. Renseigner `portal.scanner` avec le chemin absolu vers `clamscan` installé hors du projet doté de signatures tenues à jour. Vérifier `proc_open` et les codes de sortie 0 (accepté), 1 (refusé), autre (échec). Aucun enregistrement si le contrôle manque, refuse le fichier ou échoue. Les exécutions sont séquentielles, avec une limite de 20 s par fichier. Tester le débit et les délais PHP/proxy avec un lot de cinq fichiers avant ouverture.
-4. En recette, activer `portal.enabled`. Si la recette couvre aussi le devis MySQL, définir `quote_enabled => true` et `quote_backend => 'mysql'`. Ce mode utilise le secret et la table des limites de `portal.sql`. Dimensionner PHP et le serveur web, par exemple `upload_max_filesize=10M`, `post_max_size=55M`, `max_file_uploads=6` au minimum pour pouvoir rejeter un sixième fichier. Vérifier aussi les sessions, le dossier temporaire et l’espace disque. Le portail limite à cinq fichiers de 10 Mio par dépôt et 1 Gio par dossier.
+2. Depuis la racine du projet, copiez [`app/config.example.php`](./app/config.example.php) vers `app/config.local.php`.
+3. Renseignez la connexion MySQL dans la copie locale. Ne copiez jamais ces valeurs dans un fichier suivi par Git.
+4. Importez [`database/schema.sql`](./database/schema.sql) dans la base.
+5. Démarrez le serveur avec la commande de la section [Démarrage rapide](#démarrage-rapide--commandes-dev).
 
-### Ouvrir ou révoquer un accès
+L’hébergement cible indiqué par le projet est Hostinger Business mutualisé. Les capacités réelles du compte, les sauvegardes et les conditions de déploiement restent à vérifier sur le compte concerné ; aucune URL de production n’est documentée ici.
 
-```bash
-php tools/portal/comptes.php nouveau-client client@example.invalid 'Dossier de recette'
-php tools/portal/comptes.php cabinet cabinet@example.invalid
-php tools/portal/comptes.php client-dossier autre@example.invalid 1
-php tools/portal/comptes.php reinitialiser client@example.invalid
-php tools/portal/comptes.php revoquer client@example.invalid
+## Utiliser le site
+
+Les routes actuellement déclarées dans [`app/routes.php`](./app/routes.php) sont :
+
+- `/` : accueil et hero vidéo ;
+- `/prestations` : six domaines de prestation ;
+- `/tarifs` : informations d’honoraires encore à confirmer ;
+- `/zones` : Suisse romande, avec détails encore à confirmer ;
+- `/devis` : formulaire de demande ;
+- `/mentions-legales` : informations légales encore à confirmer.
+
+Le formulaire `/devis` vérifie côté serveur les champs, le consentement, le jeton CSRF et le type de besoin. Il applique aussi un piège à robots et une limite de dix tentatives par adresse IP et par fenêtre de quinze minutes. Une demande valide est enregistrée par requête PDO préparée lorsque MySQL est disponible, puis la page redirige en `303` pour éviter le double envoi au rafraîchissement.
+
+Lorsque la base n’est pas configurée ou indisponible, la page répond `503` avec un message de reprise et sans afficher de détail technique. La preuve d’insertion MySQL en conditions réelles reste à faire.
+
+## Médias réellement présents
+
+Le hero contient une vraie vidéo locale, un poster local, un repli MP4 et un bouton de pause. Le script [`assets/js/hero.js`](./assets/js/hero.js) prend aussi en charge `prefers-reduced-motion`, et le markup se trouve dans [`app/views/home.php`](./app/views/home.php).
+
+| Fichier | Origine et droits | Dimensions / caractéristiques | Taille constatée |
+| --- | --- | --- | ---: |
+| [`hero-video.webm`](./hero-video.webm) | Fichier fourni par le propriétaire ; décision d’exploitation consignée dans [`projet/DECISIONS.md`](./projet/DECISIONS.md) | WebM, VP9, 3840×2160, 60 i/s, audio Opus, 10,056 s | 3 149 260 octets |
+| [`hero-video.mp4`](./hero-video.mp4) | Dérivé local autorisé à partir de la source propriétaire | H.264, 1920×1080, 30 i/s, audio AAC, 10,048 s | 704 735 octets |
+| [`hero-video-poster.jpg`](./hero-video-poster.jpg) | Poster local extrait dans le périmètre média autorisé | JPEG, 1920×1080 | 48 511 octets |
+
+La source WebM est conservée à la racine et ne doit pas être modifiée. Le dépôt ne contient pas de licence publique séparée pour cette vidéo : le droit d’exploitation est déclaré par décision du propriétaire dans [`projet/DECISIONS.md`](./projet/DECISIONS.md). Aucun média distant n’est utilisé pour le hero.
+
+## Tests et état connu
+
+Les commandes de test sont celles de [`tools/tests/devis-check.php`](./tools/tests/devis-check.php) et [`tools/tests/devis-http.php`](./tools/tests/devis-http.php). Le suivi [`projet/NOW.md`](./projet/NOW.md) indique :
+
+- `php -l` sur les fichiers PHP : **PASS**, 0 erreur ;
+- test de validation du devis : **25 PASS** ;
+- test HTTP local : **42 PASS** ;
+- insertion MySQL réelle et double envoi après insertion : **NON EXÉCUTÉS** (`pdo_mysql` et MySQL absents de l’environnement local) ;
+- QA navigateur, mobile, clavier et captures : **NON EXÉCUTÉE**.
+
+Le site n’est donc pas à qualifier comme totalement validé ou prêt à publier sur la seule base des tests locaux.
+
+## Dépannage
+
+### `php` ou `mysql` est introuvable
+
+Installez l’outil correspondant dans votre environnement local, puis relancez `php -v` ou la commande MySQL. Le projet n’installe pas ces outils automatiquement.
+
+### `POST /devis` répond `503`
+
+Vérifiez que `app/config.local.php` existe, que les identifiants sont corrects, que la base est joignable et que `pdo_mysql` est chargé par PHP. Les détails de connexion ne doivent pas être publiés dans un journal ou un commit.
+
+### Le serveur local affiche une erreur de démarrage
+
+Vérifiez qu’aucun autre processus n’utilise le port `8123`, puis choisissez un port local libre dans la commande `php -S` et transmettez la même URL au test HTTP.
+
+### Le formulaire refuse la demande
+
+Rechargez `/devis` afin d’obtenir un nouveau jeton CSRF. Contrôlez ensuite les champs signalés, le besoin sélectionné et le consentement. Le navigateur ne remplace pas la validation serveur.
+
+## Organisation technique
+
+```text
+index.php                 contrôleur frontal
+.htaccess                 réécriture Apache et accès aux dossiers internes
+app/bootstrap.php         configuration, session, CSRF, PDO et helpers
+app/devis.php             validation, anti-spam et traitement du devis
+app/routes.php             routes publiques
+app/content/fr.php         textes français
+app/views/                 gabarits des pages
+assets/css/app.css         styles et responsive
+assets/js/hero.js          lecture et pause accessibles du hero
+database/schema.sql        schéma MySQL des demandes de devis
+tools/tests/               tests CLI ciblés
+tools/media-manager/       outil local d’inventaire des médias
+storage/                   données locales ignorées par Git
+projet/                    PRD, décisions, suivi et backlog
+instructions/              règles de travail du kit
 ```
 
-L’opérateur communique le code (24 h, usage unique) en privé après avoir vérifié l’identité du destinataire. Le client utilise `/espace-client/activation`, puis `/espace-client/connexion`. Ne pas inclure le code dans une URL ni un journal. Une réinitialisation invalide le mot de passe et les sessions en cours. Le rôle cabinet couvre tous les dossiers. Aucun envoi d’e-mail automatique, ni OCR.
+Les fichiers internes (`app`, `database`, `projet`, `instructions`, `tools`, `storage`) sont refusés par [`.htaccess`](./.htaccess) lorsqu’Apache est utilisé. `app/config.local.php` et les fichiers de stockage ne doivent pas être publiés.
 
-### Vérifier avec des données fictives
+## Git et déploiement
 
-Sur une base et un stockage **jetables** uniquement, configurer le mode de devis `mysql` pour cette suite et utiliser le chemin absolu du double de test `tools/tests/scanner-factice.sh` comme scanner. Ce script ne détecte aucun logiciel malveillant. Ne jamais le configurer en production. Démarrer ensuite le serveur, puis exécuter la recette HTTP.
+La politique du propriétaire impose la branche `main` exclusivement : pas de branche secondaire, de pull request, de worktree ou de force-push. Avant toute écriture :
 
-```bash
-php -d upload_max_filesize=11M -d post_max_size=55M -d max_file_uploads=6 -S 127.0.0.1:8123 index.php
-python3 tools/tests/portail-http.py 8123
+```powershell
+git branch --show-current
+git status -sb
 ```
 
-### Avant ouverture réelle
+Si la branche n’est pas `main`, arrêtez-vous sans changer de branche automatiquement. Les commits et les push nécessitent un accord explicite.
 
-- Vérifier sur l’hébergement de recette PHP 8.3, PDO MySQL, Fileinfo, HTTPS, protections Apache, accès CLI, stockage privé et analyse effective des fichiers. Aucun test sur données réelles.
-- Recetter l’ergonomie mobile et au clavier. Valider la notice de confidentialité, les coordonnées, la conservation des pièces et des journaux, ainsi que l’authentification renforcée du rôle cabinet.
-- Préparer des sauvegardes privées et protégées. Mettre les écritures en pause pendant la sauvegarde coordonnée de la base et du stockage. Restaurer les deux ensemble dans un environnement isolé et comparer les nombres de pièces, leurs tailles/empreintes et leurs droits avant réouverture. Surveiller les quotas disque et la croissance des tables. Planifier la purge de `lf_limites` au-delà des fenêtres de limitation sans toucher aux pièces ni aux événements métier.
-- En cas de retour arrière, désactiver les deux fonctions avant toute intervention. Conserver la base et le stockage privés, puis restaurer le code autorisé sans supprimer de données. Un push sur `main` n’est pas un déploiement.
+Aucune commande de déploiement n’est fournie dans les fichiers du projet. La publication sur l’hébergement réel, les capacités PHP/MySQL, TLS, les sauvegardes et la restauration doivent être vérifiées séparément et autorisées par le propriétaire. Le serveur PHP intégré ne sert qu’au développement local.
+
+## Documents utiles
+
+- [`projet/PRD.md`](./projet/PRD.md) : objectifs produit et critères d’acceptation ;
+- [`projet/NOW.md`](./projet/NOW.md) : tâche active, preuves et limites actuelles ;
+- [`projet/BACKLOG.md`](./projet/BACKLOG.md) : backlog unique ;
+- [`projet/DECISIONS.md`](./projet/DECISIONS.md) : choix de stack, hébergement et médias ;
+- [`database/schema.sql`](./database/schema.sql) : structure de la table de devis ;
+- [`tools/media-manager/README.md`](./tools/media-manager/README.md) : fonctionnement détaillé du gestionnaire de médias.
+
+Les tarifs, les zones précises, les coordonnées et les mentions légales restent marqués `[À CONFIRMER]` dans le contenu du projet. Ne les remplacez par des informations réelles qu’après validation du propriétaire.
