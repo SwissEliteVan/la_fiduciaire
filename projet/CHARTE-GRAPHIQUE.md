@@ -4,7 +4,7 @@
 
 ## Signature
 
-- **Logotype horizontal** : `assets/brand/la-fiduciaire.png` (512 × 149, fourni par le propriétaire). À privilégier dans l’en-tête et sur les écrans de connexion. Garder ses proportions et laisser au minimum 8 px autour dans l’interface. Largeur conseillée : 124 à 166 px.
+- **Logotype horizontal** : `assets/brand/la-fiduciaire.png` (512 × 149, fourni par le propriétaire). À privilégier dans l’en-tête et sur les écrans de connexion. Garder ses proportions et laisser au minimum 8 px autour dans l’interface. Largeur conseillée : 132 à 176 px.
 - **Monogramme LF** : `assets/brand/apple-touch-icon.png` (180 × 180, fourni). Réservé au favicon, à l’icône iOS et aux contextes compacts. Ne pas étirer, recolorer ni redessiner ces fichiers.
 - **Motif de marque** : le trait vertical du logotype inspire les séparations de rubriques et les repères de lecture, sans devenir un code d’état.
 
@@ -36,4 +36,4 @@ Ne jamais distinguer deux états par leur couleur seule. Utiliser un libellé en
 - **Suivi** : liste lisible sur mobile, une ligne ou carte par pièce. Afficher nom, période, catégorie et statut, puis l’action de téléchargement. Les erreurs disent quoi corriger. N’afficher « Reçu » qu’après enregistrement réel.
 - **Voix** : vouvoiement, verbes concrets et phrases brèves. Préférer « Déposer mes pièces » à « Gérer mes assets », et « À remplacer » à « Rejeté ».
 
-Les valeurs applicables au site sont dans `assets/css/brand.css`. Référence d’accessibilité : [WCAG 2.2](https://www.w3.org/TR/WCAG22/). Le contraste des paires ne remplace pas la recette clavier, zoom, mobile et lecteur d’écran.
+Les valeurs applicables au site sont dans `assets/css/brand.css`. La vitrine les applique dans `assets/css/vitrine.css` : panneau d’accueil bleu LF face à la vidéo, appels à l’action inversés, filets verticaux et numéros de section. Le devis reprend le même bandeau et la carte blanche. Référence d’accessibilité : [WCAG 2.2](https://www.w3.org/TR/WCAG22/). Le contraste des paires ne remplace pas la recette clavier, zoom, mobile et lecteur d’écran.

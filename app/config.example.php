@@ -27,7 +27,9 @@ return [
         'secret'       => '',  // bin2hex(random_bytes(32)), secret local uniquement.
         'scanner'      => '',  // Exécutable clamscan avec signatures à jour (requis hors test local).
     ],
-    'quote_enabled' => false,
+    'quote_enabled' => true,
+    'quote_backend' => 'files',  // files = privé, sans SQL ; mysql = option historique.
+    'quote_storage_dir' => '',   // Optionnel, chemin absolu hors racine web et hors dépôt.
     // Coordonnées publiques : à confirmer par le propriétaire (voir projet/PRD.md).
     'contact'  => [
         'email'     => null,       // [À CONFIRMER]

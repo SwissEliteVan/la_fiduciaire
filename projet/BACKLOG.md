@@ -16,5 +16,6 @@
 | TASK-010 | P3 | Application de gestion Laravel (hors périmètre vitrine) | décision propriétaire | — | L | IDEA |
 | TASK-011 | P0 | Charte LF, prompt de finalisation et MVP de transmission des pièces | demande propriétaire, ADR-004 | test HTTP de bout en bout avec deux dossiers et le cabinet | L | DONE |
 | TASK-012 | P0 | Recette hébergeur : HTTPS, scanner réel, sauvegarde/restauration, comptes cabinet et textes publics | accès et configuration validés | dérouler la recette avant d’activer les pièces réelles | L | BLOCKED |
+| TASK-013 | P0 | Appliquer visiblement la charte et rendre les devis utilisables sans SQL | demande propriétaire, ADR-005 | recette HTTP/CLI sans PDO ni config locale | M | DONE |
 
 **Notes :** le test local n’établit pas la compatibilité de l’hébergeur. TASK-001 et TASK-012 sont des prérequis à l’ouverture, pas au développement local du MVP. Aucun déploiement implicite.

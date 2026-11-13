@@ -33,7 +33,8 @@ return [
     ],
 
     'hero' => [
-        'title'       => 'Votre fiduciaire en Suisse romande',
+        'eyebrow'     => 'La Fiduciaire · Suisse romande',
+        'title'       => 'Votre comptabilité, en clair.',
         'subtitle'    => 'Comptabilité, TVA, salaires, pilotage, création d’entreprise et bouclement : un interlocuteur unique pour indépendants, TPE et PME.',
         'cta'         => 'Demander un devis',
         'cta_alt'     => 'Voir les prestations',

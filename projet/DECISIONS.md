@@ -77,3 +77,9 @@ Test d'invalidation / condition de relecture : accord écrit d'initialisation, p
 - **Condition d’ouverture.** Recette réelle, revue du rôle cabinet et de son authentification, limites/disponibilité du scanner, confidentialité et sauvegarde/restauration prouvées. Si l’hébergeur ne permet pas l’analyse requise et le stockage hors web, ne pas activer le portail et rouvrir le choix d’architecture.
 
 Mise à jour ADR-003 : le dépôt GitHub et sa branche `main` existent. Le propriétaire a explicitement autorisé l’intégration directe sur `main` pour cette mission. Les règles d’absence de branche secondaire et de déploiement distinct restent applicables.
+
+## ADR-005 — Devis sans SQL par défaut
+
+- **Décision (2026-11-13).** Pour ouvrir rapidement le parcours vitrine, un devis validé devient un fichier JSON individuel et privé, écrit sous verrou avant confirmation. Pas de configuration SQL, de notification e-mail ni de compte requis pour un prospect.
+- **Alternative.** SQLite introduit une extension à vérifier. MySQL reste un choix explicite et inchangé pour le portail. Aucun transfert ou effacement automatique des devis entre modes.
+- **Exploitation.** Le processus PHP doit pouvoir écrire hors racine publique. Les fichiers sont lisibles par un opérateur en CLI ou dans le gestionnaire privé de l’hébergeur. Il faut sauvegarder et contrôler ce dossier avant ouverture réelle.
