@@ -3,7 +3,8 @@
 declare(strict_types=1);
 
 /** @var string $content Contenu HTML déjà rendu par la vue. */
-$pageTitle = content('pages.' . $view . '.title', content('site.name'));
+$privatePage = str_starts_with($view, 'portal-');
+$pageTitle = $pageTitle ?? content('pages.' . $view . '.title', content('site.name'));
 $pageDescription = content('pages.' . $view . '.description', content('site.description'));
 ?>
 <!doctype html>
@@ -13,16 +14,27 @@ $pageDescription = content('pages.' . $view . '.description', content('site.desc
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title><?= e($pageTitle) ?></title>
     <meta name="description" content="<?= e($pageDescription) ?>">
-    <link rel="canonical" href="<?= e(config('base_url', '') . request_path()) ?>">
+    <?php if ($privatePage): ?>
+        <meta name="robots" content="noindex, nofollow">
+    <?php else: ?>
+        <link rel="canonical" href="<?= e(config('base_url', '') . request_path()) ?>">
+    <?php endif; ?>
+    <meta name="theme-color" content="#0f3d5a">
+    <link rel="icon" type="image/png" href="<?= e(asset('assets/brand/apple-touch-icon.png')) ?>">
+    <link rel="apple-touch-icon" href="<?= e(asset('assets/brand/apple-touch-icon.png')) ?>">
+    <link rel="stylesheet" href="<?= e(asset('assets/css/brand.css')) ?>">
     <link rel="stylesheet" href="<?= e(asset('assets/css/app.css')) ?>">
+    <?php if ($privatePage): ?>
+        <link rel="stylesheet" href="<?= e(asset('assets/css/portal.css')) ?>">
+    <?php endif; ?>
 </head>
 <body>
 <a class="skip-link" href="#contenu"><?= e(content('ui.skip')) ?></a>
 
 <header class="site-header">
     <a class="brand" href="/">
-        <span class="brand__mark" aria-hidden="true">LF</span>
-        <span class="brand__name"><?= e(content('site.name')) ?></span>
+        <img class="brand__logo" src="<?= e(asset('assets/brand/la-fiduciaire.png')) ?>"
+             width="512" height="149" alt="<?= e(content('site.name')) ?> — Accueil">
     </a>
 
     <nav class="site-nav" aria-label="<?= e(content('ui.menu')) ?>">
@@ -32,7 +44,13 @@ $pageDescription = content('pages.' . $view . '.description', content('site.desc
         <?php endforeach; ?>
     </nav>
 
-    <a class="btn btn--primary btn--header" href="/devis"><?= e(content('hero.cta')) ?></a>
+    <div class="header-actions">
+        <a class="btn btn--secondary btn--header" href="/espace-client"
+           <?= $privatePage ? 'aria-current="true"' : '' ?>>Espace client</a>
+        <?php if (!$privatePage): ?>
+            <a class="btn btn--primary btn--header" href="/devis"><?= e(content('hero.cta')) ?></a>
+        <?php endif; ?>
+    </div>
 </header>
 
 <main id="contenu">
@@ -50,6 +68,8 @@ $pageDescription = content('pages.' . $view . '.description', content('site.desc
     </div>
 </footer>
 
-<script src="<?= e(asset('assets/js/hero.js')) ?>" defer></script>
+<?php if ($view === 'home'): ?>
+    <script src="<?= e(asset('assets/js/hero.js')) ?>" defer></script>
+<?php endif; ?>
 </body>
 </html>

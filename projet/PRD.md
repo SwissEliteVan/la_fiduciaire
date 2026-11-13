@@ -1,4 +1,4 @@
-# PRD — La Fiduciaire (vitrine)
+# PRD — La Fiduciaire (vitrine et portail)
 
 **Statut :** rempli le 2026-11-10 par IA A à partir des déclarations du propriétaire. Toute valeur non fournie reste `[À CONFIRMER]` ; aucun prix, droit ni promesse réglementaire n'est inventé.
 
@@ -25,17 +25,28 @@ Prestations annoncées : comptabilité, TVA, salaires, pilotage, création d'ent
 | F002 | visiteur | Voir les prestations | Les 6 prestations annoncées sont présentées avec un texte propre à chacune | relecture propriétaire | TODO |
 | F003 | visiteur | Connaître les honoraires | Une page tarifs affiche les modalités ou fourchettes validées par le propriétaire, sans promesse non validée | relecture propriétaire | TODO (`[À CONFIRMER]`) |
 | F004 | visiteur | Savoir si sa région est couverte | La zone Suisse romande est listée explicitement (cantons/villes validés) | relecture propriétaire | TODO (`[À CONFIRMER]`) |
-| F005 | prospect | Demander un devis | **Étant donné** le formulaire rempli valide, **quand** j'envoie, **alors** la demande est enregistrée en MySQL, une confirmation s'affiche, et une saisie invalide produit un message d'erreur sans perte de données | test d'intégration PHP/MySQL | TODO |
+| F005 | prospect | Demander un devis | **Étant donné** le formulaire rempli valide, **quand** j'envoie, **alors** la demande est enregistrée en MySQL, une confirmation s'affiche, et une saisie invalide produit un message d'erreur sans perte de données | test d'intégration PHP/MySQL | TESTÉ EN LOCAL |
 | F006 | visiteur | Informations légales | Mentions légales accessibles depuis toutes les pages (raison sociale, IDE/RC, adresse, contact) | relecture propriétaire | TODO (`[À CONFIRMER]`) |
 | F007 | visiteur | Naviguer en français | Contenu FR complet, aucune chaîne manquante ; textes critiques relus | contrôle i18n | TODO |
 
-## Hors périmètre (phase vitrine)
+## Phase portail — transmission des pièces
 
-- **Application de gestion Laravel** : prévue ultérieurement, explicitement **hors périmètre** de cette installation.
-- Pas de comptes clients, pas d'authentification, pas d'espace documentaire, pas de paiement en ligne dans cette phase.
-- Pas de SaaS externe indispensable (analytics tiers, anti-spam SaaS, stockage externe) : anti-spam natif côté serveur.
-- EN/DE/IT : préparation technique i18n souhaitable, **traduction effective seulement si le temps le permet** ; FR seul reste acceptable pour la phase 1.
-- Aucun back-office non validé.
+Le prospect reste sur le parcours vitrine. Le client existant reçoit un code du cabinet, configure son mot de passe et accède à son dossier. Il classe ses pièces par mois et catégorie, dépose jusqu’à cinq fichiers PDF/JPG/PNG de 10 Mo chacun et retrouve les documents réellement reçus. Le cabinet peut filtrer les dépôts, les télécharger et les marquer « Traité » ou « À remplacer ».
+
+| ID | Acceptation | État |
+|---|---|---|
+| F008 | Un code à usage unique expire, peut être renouvelé, et une révocation ferme les sessions | Recette HTTP locale |
+| F009 | Un lot valide est conservé hors racine web, avec trace en base et confirmation après enregistrement | Recette locale PHP/MariaDB, scanner factice |
+| F010 | Deux dossiers ne voient ni ne téléchargent leurs pièces respectives. Seul le cabinet change les statuts | Recette HTTP locale |
+| F011 | La charte, l’espace client et le formulaire de devis fonctionnent sans dépendance front externe | Inspection HTML et contrastes, recette visuelle à faire |
+| F012 | Hébergement cible validé, scanner réel, sauvegarde/restauration et parcours de récupération éprouvés avant ouverture | À vérifier sur l’hébergement |
+
+## Hors périmètre de ce MVP
+
+- Pas de migration Laravel, d’inscription publique, de paiement, d’OCR, de connecteur CRM ni d’envoi de pièces par e-mail.
+- Pas de SaaS externe indispensable. Le portail et le devis restent désactivés par défaut.
+- FR d’abord. Les autres langues ne sont pas nécessaires à cette phase.
+- Gestion des comptes par CLI dans le MVP. Le rôle cabinet a accès à tous les dossiers. Authentification renforcée et périmètre par collaborateur à décider avant ouverture.
 
 ## Contraintes techniques
 

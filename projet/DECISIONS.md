@@ -68,3 +68,12 @@ Conséquences et limites : sans dépôt, aucun SHA de référence et aucun histo
 Test d'invalidation / condition de relecture : accord écrit d'initialisation, puis vérification
   `git branch --show-current` = `main` avant toute écriture suivie.
 ```
+
+## ADR-004 — Portail documentaire sur le socle existant
+
+- **Décision (2026-11-13).** Garder PHP natif + MySQL, étendre le contrôleur frontal et ajouter une migration additive. Aucun compte n’est créé par la migration. Le portail est désactivé par défaut.
+- **Alternative.** Laravel apporte des briques de sécurité et d’administration, mais impose un changement de stack alors que Composer, la CLI et les possibilités du compte Hostinger ne sont pas prouvés. Un stockage SaaS est écarté pour ce MVP et nécessiterait une décision distincte.
+- **Stockage et rôles.** Le fichier analysé est stocké hors racine web sous un nom généré. Le serveur contrôle le dossier à chaque lecture. Le cabinet est un rôle global à provisionner avec parcimonie. Les codes à usage unique sont remis manuellement par un canal privé, jamais dans une URL.
+- **Condition d’ouverture.** Recette réelle, revue du rôle cabinet et de son authentification, limites/disponibilité du scanner, confidentialité et sauvegarde/restauration prouvées. Si l’hébergeur ne permet pas l’analyse requise et le stockage hors web, ne pas activer le portail et rouvrir le choix d’architecture.
+
+Mise à jour ADR-003 : le dépôt GitHub et sa branche `main` existent. Le propriétaire a explicitement autorisé l’intégration directe sur `main` pour cette mission. Les règles d’absence de branche secondaire et de déploiement distinct restent applicables.

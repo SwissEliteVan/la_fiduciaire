@@ -8,7 +8,8 @@ declare(strict_types=1);
     <video class="hero__video"
            data-hero-video
            poster="<?= e(asset('hero-video-poster.jpg')) ?>"
-           autoplay
+           width="1920"
+           height="1080"
            muted
            loop
            playsinline
@@ -85,39 +86,15 @@ declare(strict_types=1);
     </ul>
 </section>
 
-<section class="section section--muted" aria-labelledby="temoignages-titre">
-    <div class="section__head">
-        <h2 id="temoignages-titre"><?= e(content('home_temoignages.title')) ?></h2>
-        <p><?= e(content('home_temoignages.subtitle')) ?></p>
-    </div>
-
-    <div class="testimonials">
-        <?php foreach ((array) content('home_temoignages.items', []) as $temoignage): ?>
-            <figure class="testimonial">
-                <blockquote class="testimonial__quote"><?= e($temoignage['quote']) ?></blockquote>
-                <figcaption class="testimonial__role"><?= e($temoignage['role']) ?></figcaption>
-            </figure>
-        <?php endforeach; ?>
-    </div>
-</section>
-
-<section class="section" aria-labelledby="contact-titre">
-    <div class="section__head">
-        <h2 id="contact-titre"><?= e(content('home_contact.title')) ?></h2>
-        <p><?= e(content('home_contact.intro')) ?></p>
-    </div>
-
-    <dl class="contact-list">
-        <?php foreach ((array) content('home_contact.items', []) as $coord): ?>
-            <div class="contact-list__item">
-                <dt><?= e($coord['label']) ?></dt>
-                <dd><?= e($coord['value']) ?></dd>
-            </div>
-        <?php endforeach; ?>
-    </dl>
-
-    <p class="section__link"><a class="btn btn--primary" href="/devis"><?= e(content('home_contact.cta')) ?></a></p>
-</section>
+<?php if (config('portal.enabled', false) === true): ?>
+    <section class="section section--muted" aria-labelledby="espace-titre">
+        <div class="section__head">
+            <h2 id="espace-titre">Vos pièces comptables, au même endroit</h2>
+            <p>Vous êtes déjà client ? Connectez-vous pour transmettre vos factures, relevés et justificatifs, puis suivre leur traitement.</p>
+            <a class="btn btn--secondary" href="/espace-client">Accéder à mon espace</a>
+        </div>
+    </section>
+<?php endif; ?>
 
 <section class="cta-band" aria-labelledby="cta-titre">
     <div class="cta-band__inner">

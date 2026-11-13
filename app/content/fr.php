@@ -20,7 +20,6 @@ return [
         ['path' => '/prestations',      'label' => 'Prestations'],
         ['path' => '/tarifs',           'label' => 'Tarifs'],
         ['path' => '/zones',            'label' => 'Zones desservies'],
-        ['path' => '/devis',            'label' => 'Devis'],
     ],
 
     'pages' => [
@@ -50,7 +49,7 @@ return [
         'trust_items'          => [
             'Indépendants, TPE et PME de Suisse romande',
             'Un interlocuteur unique pour la comptabilité et le pilotage',
-            'Une demande de devis en ligne, sans engagement',
+            'Des prestations adaptées aux besoins de votre entreprise',
         ],
         'cta_title' => 'Parlons de votre situation',
         'cta_text'  => 'Décrivez votre activité et vos besoins : vous recevez une proposition adaptée.',
@@ -72,21 +71,21 @@ return [
 
     'tarifs' => [
         'title' => 'Tarifs',
-        'intro' => 'Les modalités d’honoraires ne sont pas encore validées par le propriétaire.',
-        'body'  => '[À CONFIRMER] Fourchettes horaires, forfaits éventuels et mention de TVA à fournir avant publication. Aucun prix n’est affiché tant qu’il n’est pas confirmé.',
+        'intro' => 'Les honoraires dépendent de votre situation et des prestations demandées.',
+        'body'  => 'Décrivez votre activité et le suivi dont vous avez besoin pour demander une proposition.',
         'cta'   => 'Demander une proposition',
     ],
 
     'zones' => [
         'title' => 'Zones desservies',
         'intro' => 'La Fiduciaire accompagne des clients en Suisse romande.',
-        'body'  => '[À CONFIRMER] Liste des cantons et villes desservies, ainsi que la possibilité d’un accompagnement à distance, à valider avant publication.',
+        'body'  => 'Indiquez votre lieu d’activité dans votre demande afin que nous puissions vous répondre.',
     ],
 
     'devis' => [
         'title' => 'Demander un devis',
         'intro' => 'Décrivez votre situation en quelques champs : la demande est ensuite traitée par la fiduciaire.',
-        'note'  => 'Formulaire en préparation : l’enregistrement sécurisé des demandes n’est pas encore activé.',
+        'note'  => 'Les demandes en ligne ne sont pas encore ouvertes sur ce site.',
         'fields' => [
             'nom'       => 'Nom et prénom',
             'email'     => 'Adresse e-mail',
@@ -101,7 +100,7 @@ return [
         'submit'  => 'Envoyer la demande',
         'indisponible' => [
             'title' => 'Demande non envoyée',
-            'body'  => 'L’enregistrement des demandes n’est pas encore activé sur cet environnement. Aucune donnée n’a été conservée. Cette fonctionnalité fait l’objet d’une tâche de développement dédiée.',
+            'body'  => 'L’envoi n’a pas pu être confirmé. Revenez au formulaire pour vérifier l’état de votre demande.',
         ],
     ],
 
@@ -109,7 +108,8 @@ return [
         'title'         => 'Mentions légales',
         'body'          => '[À CONFIRMER] Raison sociale, numéro IDE / registre du commerce, adresse, affiliation professionnelle éventuelle, adresse e-mail et téléphone publics à fournir avant publication.',
         'privacy_title' => 'Données personnelles',
-        'privacy_body'  => 'Les données transmises via le formulaire de devis servent uniquement au traitement de la demande. Aucun service externe d’analyse ou de suivi publicitaire n’est utilisé.',
+        'privacy_body'  => 'Les données transmises via le formulaire de devis servent au traitement de votre demande. Les pièces déposées dans l’espace client sont destinées au suivi de votre dossier comptable.',
+        'privacy_pending' => 'Les coordonnées du responsable et les modalités détaillées de conservation et d’exercice de vos droits doivent être confirmées avant l’ouverture du service.',
     ],
 
     'footer' => [
@@ -120,10 +120,9 @@ return [
     'home_why' => [
         'title' => 'Pourquoi nous choisir',
         'items' => [
-            ['titre' => 'Proximité',            'texte' => 'Une fiduciaire de Suisse romande, joignable pendant les heures ouvrées.'],
+            ['titre' => 'Proximité',            'texte' => 'Une fiduciaire de Suisse romande.'],
             ['titre' => 'Réactivité',           'texte' => 'Un interlocuteur unique, qui traite directement les demandes courantes.'],
             ['titre' => 'Expertise romande',    'texte' => 'Comptabilité, TVA, salaires et bouclement traités selon les usages romands.'],
-            ['titre' => 'Tarifs transparents',  'texte' => 'Les modalités d’honoraires sont communiquées avant le début de la mission. [À CONFIRMER]'],
         ],
     ],
 
@@ -147,6 +146,18 @@ return [
             ['label' => 'Horaires',  'value' => '[À CONFIRMER]'],
         ],
         'cta' => 'Demander un devis',
+    ],
+
+    'portal' => [
+        'categories' => [
+            'achats' => 'Factures d’achat',
+            'ventes' => 'Factures de vente',
+            'banque' => 'Relevés bancaires',
+            'salaires' => 'Salaires',
+            'tva' => 'TVA',
+            'autres' => 'Autres justificatifs',
+        ],
+        'statuses' => ['recu' => 'Reçu', 'traite' => 'Traité', 'a_remplacer' => 'À remplacer'],
     ],
 
     'ui' => [

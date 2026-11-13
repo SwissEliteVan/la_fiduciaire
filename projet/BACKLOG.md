@@ -14,5 +14,7 @@
 | TASK-008 | P2 | Tests ciblés et lint/CI locale du projet (après `git init` autorisé) | TASK-003 | commande de test reproductible, code de sortie 0 | M | IDEA |
 | TASK-009 | P3 | EN/DE/IT sur accueil, services et tarifs | TASK-005 | parité des clés + `hreflang` | L | IDEA |
 | TASK-010 | P3 | Application de gestion Laravel (hors périmètre vitrine) | décision propriétaire | — | L | IDEA |
+| TASK-011 | P0 | Charte LF, prompt de finalisation et MVP de transmission des pièces | demande propriétaire, ADR-004 | test HTTP de bout en bout avec deux dossiers et le cabinet | L | DONE |
+| TASK-012 | P0 | Recette hébergeur : HTTPS, scanner réel, sauvegarde/restauration, comptes cabinet et textes publics | accès et configuration validés | dérouler la recette avant d’activer les pièces réelles | L | BLOCKED |
 
-**Notes :** TASK-001 conditionne le choix définitif entre les options A et B de l'ADR-001 ; aucun démarrage de code avant cette réponse. Toute tâche `BLOCKED` le reste jusqu'à preuve ou accord, sans contournement.
+**Notes :** le test local n’établit pas la compatibilité de l’hébergeur. TASK-001 et TASK-012 sont des prérequis à l’ouverture, pas au développement local du MVP. Aucun déploiement implicite.
