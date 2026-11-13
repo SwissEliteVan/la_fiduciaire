@@ -305,7 +305,11 @@ def main():
             cabinet.request('/espace-client/deposer', {'csrf': csrf_c}, expect=403)
             alpha_dashboard, _ = alpha.request('/espace-client?statut=a_remplacer')
             assert ids[0].encode() in alpha_dashboard and 'À remplacer'.encode() in alpha_dashboard
-            print('PASS · cabinet : dossier, téléchargement, statut visible par le bon client')
+            cabinet.request('/espace-client/statut',
+                            {'csrf': csrf_c, 'id': ids[1], 'statut': 'traite'}, expect=303)
+            traite_dashboard, _ = alpha.request('/espace-client?statut=traite')
+            assert ids[1].encode() in traite_dashboard and 'Traité'.encode() in traite_dashboard
+            print('PASS · cabinet : dossier, téléchargement, statuts Traité et À remplacer visibles par le bon client')
 
             code_b2 = provision(site, 'reinitialiser', email_b)
             bravo.request('/espace-client', expect=303)
@@ -317,7 +321,7 @@ def main():
 
             state = json.loads((root / 'private' / 'portal' / 'state.json').read_text(encoding='utf-8'))
             assert len(state['pieces']) == 2
-            assert {piece['statut'] for piece in state['pieces']} == {'recu', 'a_remplacer'}
+            assert {piece['statut'] for piece in state['pieces']} == {'a_remplacer', 'traite'}
             assert any(event['action'] == 'depot' for event in state['evenements'])
             assert any(event['action'] == 'statut' for event in state['evenements'])
             print('PASS · métadonnées JSON cohérentes et événements journalisés')
